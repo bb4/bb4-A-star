@@ -22,6 +22,6 @@ abstract class AbstractSearchSpace[S, T](var initialState: S) extends SearchSpac
   def refresh(state: S, numTries: Long) {}
 
   def finalRefresh(path: Option[Seq[T]], state: Option[S], numTries: Long, elapsedMillis: Long) {
-    // nothing be default
+    // nothing by default
   }
 }

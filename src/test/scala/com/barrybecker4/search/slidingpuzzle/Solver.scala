@@ -3,6 +3,8 @@ package com.barrybecker4.search.slidingpuzzle
 import com.barrybecker4.search.{AStarSearch, HeapPriorityQueue, SearchSpace, UpdatablePriorityQueue}
 
 /**
+  * Solver for slider-puzzle games.
+  * This puzzle serves as a way of testing the generic A-star implmentation.
   * @author Barry Becker
   */
 object Solver {
