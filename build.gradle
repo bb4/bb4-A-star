@@ -1,0 +1,24 @@
+//plugins {
+//    id "com.github.maiflai.scalatest" version "0.14"
+//}
+
+apply plugin: 'scala'
+apply plugin: 'idea'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.11.8'
+    testCompile 'org.scalatest:scalatest_2.11:3.0.1'
+    //testCompile 'org.scala-lang.modules:scala-xml_2.11.0-M7:1.0.0-RC7'
+
+    // Used to generate html unit test report
+    testRuntime 'org.pegdown:pegdown:1.6.0'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.2'
+}
