@@ -1,6 +1,6 @@
 package com.barrybecker4.search.slidingpuzzle
 
-import com.barrybecker4.common.Location
+import com.barrybecker4.search.Location
 
 
 /**

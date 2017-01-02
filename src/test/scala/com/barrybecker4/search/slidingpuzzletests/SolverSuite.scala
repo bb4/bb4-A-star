@@ -1,6 +1,6 @@
 package com.barrybecker4.search.slidingpuzzletests
 
-import com.barrybecker4.common.Watch
+import com.barrybecker4.search.Watch
 import com.barrybecker4.search.slidingpuzzle.{Board, BoardReader, Solver}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 

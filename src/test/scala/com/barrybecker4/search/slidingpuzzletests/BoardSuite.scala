@@ -1,6 +1,6 @@
 package com.barrybecker4.search.slidingpuzzletests
 
-import com.barrybecker4.common.Location
+import com.barrybecker4.search.Location
 import com.barrybecker4.search.slidingpuzzle.{Board, Transition}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 

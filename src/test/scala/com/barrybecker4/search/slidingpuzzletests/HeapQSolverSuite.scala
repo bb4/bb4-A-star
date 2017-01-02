@@ -1,7 +1,6 @@
 package com.barrybecker4.search.slidingpuzzletests
 
-import com.barrybecker4.common.Watch
-import com.barrybecker4.search.HeapPriorityQueue
+import com.barrybecker4.search.{HeapPriorityQueue, Watch}
 import com.barrybecker4.search.slidingpuzzle.{Board, Solver, Transition}
 
 /**
