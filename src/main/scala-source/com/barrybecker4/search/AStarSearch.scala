@@ -3,6 +3,28 @@ package com.barrybecker4.search
 
 import scala.collection.mutable
 
+object AStarSearch {
+  // A trivial example of how the search works
+  def main(args:Array[String]) {
+    val searchSpace = new SearchSpace[String, (String, String)] {
+      val nextStates = Map("start" -> "intermediate", "intermediate" -> "goal")
+      override def initialState: String = "start"
+      override def isGoal(state: String): Boolean = state == "goal"
+      override def legalTransitions(state: String): Seq[(String, String)] = Seq((state, nextStates(state)))
+      override def transition(state: String, transition: (String, String)): String = transition._2
+      override def alreadySeen(state: String, seen: mutable.Set[String]): Boolean = false
+      override def distanceFromGoal(state: String): Int = 1
+      override def getCost(transition: (String, String)): Int = 1
+      override def refresh(state: String, numTries: Long) {}
+      override def finalRefresh(path: Option[Seq[(String, String)]],
+                                state: Option[String], numTries: Long, elapsedMillis: Long) {}
+    }
+    val search = new AStarSearch[String, (String, String)](searchSpace)
+    val path = search.solve.get
+    println("path = " + path.mkString(", "))
+  }
+}
+
 /**
   * Sequential search strategy that uses the A* search algorithm.
   * See http://en.wikipedia.org/wiki/A*_search_algorithm

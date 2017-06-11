@@ -1,43 +1,10 @@
 description = 'A-star search algorithm'
 group = 'com.barrybecker4'
-version = '1.0-SNAPSHOT'
+version = '1.4-SNAPSHOT'
 
-apply plugin: 'scala'
-apply plugin: 'idea'
-apply plugin: 'eclipse'
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-
-/**
- * Secret credentials for Sonatype and signing
- * should be defined in ~/.gradle/gradle.properties if you need them.
- * Only sign the artifacts if it is a final release.
- */
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-if (!hasProperty('sonatypeUsername')) {
-    ext.sonatypeUsername = ''
-}
-if (!hasProperty('sonatypePassword')) {
-    ext.sonatypePassword = ''
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile 'org.scala-lang:scala-library:2.11.8'
-    testCompile 'org.scalatest:scalatest_2.11:3.0.1'
-    //testCompile 'org.scala-lang.modules:scala-xml_2.11.0-M7:1.0.0-RC7'
-
-    // Used to generate html unit test report
-    testRuntime 'org.pegdown:pegdown:1.6.0'
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.2'
-}
+apply from: 'https://raw.github.com/barrybecker4/bb4-common/master/bb4.gradle'
+project.archivesBaseName = 'bb4-A-star'
+mainClassName = 'com.barrybecker4.search.AStarSearch'
 
 // This allows publishing of the A-star library to Sonatype
 apply from: 'https://raw.github.com/barrybecker4/bb4-common/master/bb4-publish.gradle'

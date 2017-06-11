@@ -4,7 +4,7 @@ package com.barrybecker4.search
 import scala.collection.mutable
 
 /**
-  * Represents the global search space of all states.
+  * Represents the global search space of all states S.
   * It must include an initial state and a goal state.
   * The type parameters S and T correspond to a state and a transition from one state to the next.
   * S and T should be immutable and should calculate and cache distance metrics in the constructor if possible.
