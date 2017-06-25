@@ -1,4 +1,6 @@
-// Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+/*
+ * Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+ */
 package com.barrybecker4.search.slidingpuzzle
 
 import java.io.InputStream
@@ -10,9 +12,9 @@ import java.util.Scanner
   *
   * @author Barry Becker
   */
-class BoardReader {
+class BoardReader(val prefix: String = "") {
   def read(filename: String): Board = {
-    val str: InputStream = getClass.getResourceAsStream(filename)
+    val str: InputStream = getClass.getResourceAsStream(prefix + filename)
     assert(str != null)
     val in: Scanner = new Scanner(str)
     val sidLen: Int = in.nextInt

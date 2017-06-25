@@ -1,4 +1,6 @@
-// Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+/*
+ * Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+ */
 
 package com.barrybecker4.search.slidingpuzzletests
 
@@ -14,7 +16,7 @@ abstract class SolverSuite extends FunSuite with BeforeAndAfter {
   protected var reader: BoardReader = _
 
   before {
-    reader = new BoardReader
+    reader = new BoardReader("cases/")
   }
 
   protected def createSolver(initial: Board): Solver

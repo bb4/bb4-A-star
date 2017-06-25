@@ -1,4 +1,6 @@
-// Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+/*
+ * Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+ */
 
 package com.barrybecker4.search.slidingpuzzle
 
@@ -13,7 +15,7 @@ object Solver {
 
   /** solve a slider puzzle */
   def main(args: Array[String]) {
-    val initial: Board = new BoardReader().read(args(0))
+    val initial: Board = new BoardReader("/cases").read(args(0))
     // solve the puzzle
     val solver: Solver = new Solver(initial, new HeapPriorityQueue[Board, Transition])
     // print solutionTransitions to standard output
