@@ -1,6 +1,6 @@
 description = 'A-star search algorithm'
 group = 'com.barrybecker4'
-version = '1.4-SNAPSHOT'
+version = '1.4'
 
 apply from: 'https://raw.github.com/barrybecker4/bb4-common/master/bb4.gradle'
 
