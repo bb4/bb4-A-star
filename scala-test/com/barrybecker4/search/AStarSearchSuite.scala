@@ -1,11 +1,14 @@
 // Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search
 
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 /**
   * @author Barry Becker
   */
+@RunWith(classOf[JUnitRunner])
 class AStarSearchSuite extends FunSuite with BeforeAndAfter {
 
   private var space: StubSearchSpace = _
