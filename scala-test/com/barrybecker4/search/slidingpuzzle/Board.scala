@@ -48,13 +48,13 @@ object Board {
   }
 }
 
-class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
+class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
 
-  private val _blocks: Array[Byte] = blocks
-  private val side: Byte = Math.sqrt(_blocks.length).toByte
-  private var _hamming: Byte = -1
-  var _manhattan: Int = if (manhattanDist == -1) calculateManhattan else manhattanDist
-  private var _hashCode: Int = -1
+  private val blocks: Array[Byte] = theBlocks
+  private val side: Byte = Math.sqrt(blocks.length).toByte
+  private var hammingDistance: Byte = -1
+  var manhattanDistance: Int = if (manhattanDist == -1) calculateManhattan else manhattanDist
+  private var hash: Int = -1
 
   /**
     * Construct a board from an N-by-N array of blocks
@@ -69,8 +69,8 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
 
   /** @return number of blocks out of place */
   def hamming: Int = {
-    if (_hamming < 0) _hamming = calculateHamming
-    _hamming
+    if (hammingDistance < 0) hammingDistance = calculateHamming
+    hammingDistance
   }
 
   private def calculateHamming: Byte = {
@@ -78,7 +78,7 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
     var hamCount: Byte = 0
     for (i <- 0 until side) {
       for (j <- 0 until side) {
-            val value: Byte = _blocks(i * side + j)
+            val value: Byte = blocks(i * side + j)
             expected = (expected + 1).toByte
             if (value != 0 && value != expected) hamCount = (hamCount + 1).toByte
       }
@@ -87,13 +87,13 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
   }
 
   /** @return sum of Manhattan distances between blocks and goal */
-  def manhattan: Int = _manhattan
+  def manhattan: Int = manhattanDistance
 
   private def calculateManhattan: Int = {
     var totalDistance: Int = 0
     for (i <- 0 until side) {
       for (j <- 0 until side) {
-        val value: Int = _blocks(i * side + j)
+        val value: Int = blocks(i * side + j)
         if (value != 0) {
           val expCol: Int = (value - 1) % side
           val expRow: Int = (value - 1) / side
@@ -108,14 +108,14 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
 
   override def equals(other: Any): Boolean = {
     other match {
-      case other: Board => hamming == other.hamming && Arrays.equals(_blocks, other._blocks)
+      case other: Board => hamming == other.hamming && Arrays.equals(blocks, other.blocks)
       case _ => false
     }
   }
 
   override def hashCode: Int = {
-    if (_hashCode < 0) _hashCode = Arrays.hashCode(_blocks)
-    _hashCode
+    if (hash < 0) hash = Arrays.hashCode(blocks)
+    hash
   }
 
   /** @return true if this board the goal board */
@@ -123,7 +123,7 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
 
   /** @return a board that is obtained by exchanging two adjacent blocks in the same row */
   def twin: Board = {
-    val newBlocks: Array[Byte] = Board.copyBlocks(this._blocks)
+    val newBlocks: Array[Byte] = Board.copyBlocks(this.blocks)
     if (newBlocks(0) != 0 && newBlocks(1) != 0) swap(0, 0, 0, 1, newBlocks)
     else swap(1, 0, 1, 1, newBlocks)
     new Board(newBlocks)
@@ -160,20 +160,20 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
     if (j > 0) neighbors :+= move(i, j, i, j - 1)
     if (j < side - 1) neighbors :+= move(i, j, i, j + 1)
 
-    neighbors = neighbors.sortBy(_._manhattan)
+    neighbors = neighbors.sortBy(_.manhattanDistance)
     neighbors
   }
 
   private def move(oldSpaceRow: Int, oldSpaceCol: Int, newSpaceRow: Int, newSpaceCol: Int): Board = {
-    val newBlocks: Array[Byte] = Board.copyBlocks(_blocks)
-    val movingVal: Int = _blocks(newSpaceRow * side + newSpaceCol)
+    val newBlocks: Array[Byte] = Board.copyBlocks(blocks)
+    val movingVal: Int = blocks(newSpaceRow * side + newSpaceCol)
     val goalCol: Int = (movingVal - 1) % side
     val goalRow: Int = (movingVal - 1) / side
     val oldDist: Int = Math.abs(newSpaceRow - goalRow) + Math.abs(newSpaceCol - goalCol)
     val newDist: Int = Math.abs(oldSpaceRow - goalRow) + Math.abs(oldSpaceCol - goalCol)
     val distImprovement: Int = oldDist - newDist
     swap(oldSpaceRow, oldSpaceCol, newSpaceRow, newSpaceCol, newBlocks)
-    new Board(newBlocks, _manhattan - distImprovement)
+    new Board(newBlocks, manhattanDistance - distImprovement)
   }
 
   /**
@@ -183,7 +183,7 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
     var i: Byte = 0
     for (i <- 0 until side) {
       for (j <- 0 until side) {
-        if (_blocks(i * side + j) == 0) return new Location(i, j)
+        if (blocks(i * side + j) == 0) return new Location(i, j)
       }
     }
     throw new IllegalStateException("No space position!")
@@ -205,7 +205,7 @@ class Board(blocks: Array[Byte], manhattanDist: Int = -1) {
     str.append(side).append("\n")
     for (i <- 0 until side) {
       for (j <- 0 until side) {
-        val value = _blocks(i * side + j)
+        val value = blocks(i * side + j)
         str.append(f"$value%2d ")
       }
       str.append("\n")

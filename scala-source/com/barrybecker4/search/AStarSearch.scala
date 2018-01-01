@@ -69,8 +69,9 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
   def solve: Option[Seq[T]] = {
     val startTime: Long = System.currentTimeMillis
     initialize()
-    val solutionState: Option[Node[S, T]] = search
-    val pathToSolution: Option[Seq[T]] = if (solutionState.isDefined) Some(solutionState.get.asTransitionList) else None
+    val solutionState: Option[Node[S, T]] = search()
+    val pathToSolution: Option[Seq[T]] =
+      if (solutionState.isDefined) Some(solutionState.get.asTransitionList) else None
     val solution: Option[S] = if (solutionState.isDefined) Some(solutionState.get.getState) else None
 
     val elapsedTime: Long = System.currentTimeMillis - startTime
@@ -96,15 +97,14 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
 
   /**
     * Best first search for a solution.
-    *
     * @return the solution state node, if found, which has the path leading to a solution. Null if no solution.
     */
-  protected def search: Option[Node[S, T]] = {
+  protected def search(): Option[Node[S, T]] = {
     while (continueSearching) {
       val currentNode: Option[Node[S, T]] = processNext(openQueue.pop)
       if (currentNode.isDefined) return currentNode
     }
-    None // failure
+    None // failed to find a solution
   }
 
   private def continueSearching: Boolean = !openQueue.isEmpty && !stopped
@@ -129,7 +129,8 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
         val estPathCost: Int = pathCost(currentState) + searchSpace.getCost(transition)
         if (!pathCost.contains(nbr) || estPathCost < pathCost(nbr)) {
           val estFutureCost: Int = estPathCost + searchSpace.distanceFromGoal(nbr)
-          val child: Node[S, T] = new Node[S, T](nbr, Some(transition), Some(currentNode), estPathCost, estFutureCost)
+          val child: Node[S, T] =
+            new Node[S, T](nbr, Some(transition), Some(currentNode), estPathCost, estFutureCost)
           pathCost.put(nbr, estPathCost)
           openQueue.addOrUpdate(child)
           numTries += 1

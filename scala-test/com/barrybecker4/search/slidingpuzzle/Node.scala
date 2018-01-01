@@ -21,7 +21,7 @@ class Node(val state: Board, var previous: Node = null, val pathCost: Int = 0) e
   /** @return cost to get from the initial state to the current one. For example, number of steps. */
   def getPathCost: Int = pathCost
 
-  def getPriority: Int = getPathCost + state._manhattan // * MULTIPLIER + state.hamming();
+  def getPriority: Int = getPathCost + state.manhattanDistance // * MULTIPLIER + state.hamming();
 
   override def toString: String = "[" + state + ", pathCost=" + pathCost + "]"
 
