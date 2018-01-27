@@ -15,13 +15,4 @@ case class StubState(id: String, estDistanceFromGoal: Int) {
   private[search] def getDistanceFromGoal: Int = estDistanceFromGoal
 
   override def toString: String = "id=" + id + " distanceFromGoal=" + estDistanceFromGoal
-
-  override def equals(other: Any): Boolean = {
-    other match {
-      case other: StubState => id == other.id
-      case _ => false
-    }
-  }
-
-  override def hashCode: Int = id.hashCode
 }

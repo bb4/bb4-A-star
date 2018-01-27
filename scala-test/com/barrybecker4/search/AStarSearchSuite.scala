@@ -24,7 +24,6 @@ class AStarSearchSuite extends FunSuite with BeforeAndAfter {
     // a list of transitions to the goal state
     val path: Option[Seq[StubTransition]] = searcher.solve
 
-
     assertResult("List([id=D distanceFromGoal=5 cost=4], [id=E distanceFromGoal=4 cost=6], [id=goal distanceFromGoal=0 cost=4])") {
       path.get.toString
     }
