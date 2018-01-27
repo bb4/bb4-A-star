@@ -72,7 +72,7 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
     val solutionState: Option[Node[S, T]] = search()
     val pathToSolution: Option[Seq[T]] =
       if (solutionState.isDefined) Some(solutionState.get.asTransitionList) else None
-    val solution: Option[S] = if (solutionState.isDefined) Some(solutionState.get.getState) else None
+    val solution: Option[S] = if (solutionState.isDefined) Some(solutionState.get.state) else None
 
     val elapsedTime: Long = System.currentTimeMillis - startTime
     searchSpace.finalRefresh(pathToSolution, solution, numTries, elapsedTime)
@@ -111,11 +111,11 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
 
   /** process the next node on the priority queue */
   private def processNext(currentNode: Node[S, T]): Option[Node[S, T]] = {
-    val currentState: S = currentNode.getState
+    val currentState: S = currentNode.state
     searchSpace.refresh(currentState, numTries)
     if (searchSpace.isGoal(currentState)) {
       // the extra check for a better path is needed when running concurrently
-      if (solution.isEmpty || currentNode.getPathCost < solution.get.getPathCost)
+      if (solution.isEmpty || currentNode.pathCost < solution.get.pathCost)
         solution = Some(currentNode)
       return Some(currentNode) // success
     }

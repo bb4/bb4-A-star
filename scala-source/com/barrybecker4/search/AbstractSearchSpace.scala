@@ -5,10 +5,11 @@ import scala.collection.mutable
 
 /**
   * Describes the search space.
-  *
+  * S represents a state within the search space
+  * T represents a transition from one state to another
   * @author Barry Becker
   */
-abstract class AbstractSearchSpace[S, T](var initialState: S) extends SearchSpace[S, T] {
+abstract class AbstractSearchSpace[S, T](val initialState: S) extends SearchSpace[S, T] {
 
   def alreadySeen(state: S, seen: mutable.Set[S]): Boolean = {
     if (!seen.contains(state)) {

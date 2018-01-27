@@ -9,9 +9,9 @@ import scala.collection.mutable
 /**
   * A priority queue implementation based on a binary heap.
   * It is pretty much the same as PriorityQueue provided by java
-  * with two modifications
+  * with two modifications:
   *  - It allows updating the priority of nodes (needed by A*)
-  *  - Does not implement Queue interface since that has more methods than needed
+  *  - Does not implement Queue interface since that has more methods than needed.
   *
   * @author Josh Bloch, Doug Lea, modified by Barry Becker as indicated above.
   */

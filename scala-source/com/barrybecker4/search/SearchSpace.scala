@@ -19,9 +19,7 @@ trait SearchSpace[S, T] extends Refreshable[S, T] {
   def isGoal(state: S): Boolean
 
   /**
-    * Try to produce this list efficiently,
-    * and try to sort if by most promising transitions first.
-    *
+    * Try to produce this list efficiently, and try to have the most promising transitions first.
     * @return a list of legal next immutable transitions.
     */
   def legalTransitions(state: S): Seq[T]
@@ -31,16 +29,13 @@ trait SearchSpace[S, T] extends Refreshable[S, T] {
 
   /**
     * Add the state to the seen set of state if not already seen.
-    *
     * @param state to check
     * @param seen  Map of seen states.
     * @return true if the specified state was already seen (possibly taking into account symmetries).
     */
   def alreadySeen(state: S, seen: mutable.Set[S]): Boolean
 
-  /**
-    * @return estimate of the cost to reach the goal from the specified state.
-    */
+  /** @return estimate of the cost to reach the goal from the specified state.*/
   def distanceFromGoal(state: S): Int
 
   /** @return the cost of making a single transition. Usually a constant like 1, but for some scenarios it matters. */
