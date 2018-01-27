@@ -19,9 +19,9 @@ class StubSearchSpace
 
   def legalTransitions(state: StubState): Seq[StubTransition] = StubSearchSpace.PROBLEM.getLegalTransitions(state)
 
-  def transition(state: StubState, transition: StubTransition): StubState = transition.getNewState
+  def transition(state: StubState, transition: StubTransition): StubState = transition.newState
 
   def distanceFromGoal(state: StubState): Int = state.getDistanceFromGoal
 
-  override def getCost(transition: StubTransition): Int = transition.getCost
+  override def getCost(transition: StubTransition): Int = transition.cost
 }

@@ -29,13 +29,13 @@ class StubProblem {
   private val initialState: StubState = new StubState("start", 9)
 
   val transitionMap: mutable.Map[StubState, Seq[StubTransition]] = mutable.Map(
-    initialState-> Seq(new StubTransition(stateA, 3), new StubTransition(stateD, 4)),
-    stateA -> Seq(new StubTransition(stateB, 4)),
-    stateB -> Seq(new StubTransition(stateC, 6)),
-    stateC -> Seq(new StubTransition(goalState, 8), new StubTransition(stateB, 8)),
-    stateD -> Seq(new StubTransition(stateE, 6)),
-    stateE -> Seq(new StubTransition(goalState, 4), new StubTransition(stateD, 6)),
-    goalState ->Seq(new StubTransition(stateE, 4), new StubTransition(stateC, 8))
+    initialState-> Seq(StubTransition(stateA, 3), StubTransition(stateD, 4)),
+    stateA -> Seq(StubTransition(stateB, 4)),
+    stateB -> Seq(StubTransition(stateC, 6)),
+    stateC -> Seq(StubTransition(goalState, 8), StubTransition(stateB, 8)),
+    stateD -> Seq(StubTransition(stateE, 6)),
+    stateE -> Seq(StubTransition(goalState, 4), StubTransition(stateD, 6)),
+    goalState ->Seq(StubTransition(stateE, 4), StubTransition(stateC, 8))
   )
 
   def getInitialState: StubState = initialState

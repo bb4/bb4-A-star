@@ -1,26 +1,12 @@
 // Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
-
 package com.barrybecker4.search
 
 /**
   * @param newState the new state to be transitioned to.
+  * @param cost the cost of making this transition
+  * @author Barry Becker
   */
-class StubTransition private[search](var newState: StubState) {
-
-  private[search] var cost: Int = 0
-
-  /**
-    * @param newState the new state to be transitioned to.
-    * @param cost     the cost of making this transition
-    */
-  def this(newState: StubState, cost: Int) {
-    this(newState)
-    this.cost = cost
-  }
-
-  private[search] def getNewState: StubState = newState
-
-  private[search] def getCost: Int = cost
+case class StubTransition private[search](newState: StubState, cost: Int = 0) {
 
   override def toString: String = "[" + newState + " cost=" + cost + "]"
 }
