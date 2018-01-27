@@ -134,10 +134,10 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
     val spacePos: Location = getSpacePosition
     val i: Int = spacePos.row
     val j: Int = spacePos.col
-    if (i > 0) neighbors :+= new Transition(spacePos, new Location(i - 1, j))
-    if (i < side - 1) neighbors :+= new Transition(spacePos, new Location(i + 1, j))
-    if (j > 0) neighbors :+= new Transition(spacePos, new Location(i, j - 1))
-    if (j < side - 1) neighbors :+= new Transition(spacePos, new Location(i, j + 1))
+    if (i > 0) neighbors :+= Transition(spacePos, Location(i - 1, j))
+    if (i < side - 1) neighbors :+= Transition(spacePos, Location(i + 1, j))
+    if (j > 0) neighbors :+= Transition(spacePos, Location(i, j - 1))
+    if (j < side - 1) neighbors :+= Transition(spacePos, Location(i, j + 1))
     neighbors
   }
 
@@ -183,7 +183,7 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
     var i: Byte = 0
     for (i <- 0 until side) {
       for (j <- 0 until side) {
-        if (blocks(i * side + j) == 0) return new Location(i, j)
+        if (blocks(i * side + j) == 0) return Location(i, j)
       }
     }
     throw new IllegalStateException("No space position!")

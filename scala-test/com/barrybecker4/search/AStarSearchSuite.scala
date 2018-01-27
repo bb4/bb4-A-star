@@ -17,6 +17,11 @@ class AStarSearchSuite extends FunSuite with BeforeAndAfter {
     space = new StubSearchSpace
   }
 
+  test("StubSearchSpace distance from goal") {
+    assertResult(9) { space.distanceFromGoal(space.initialState) }
+    assertResult(42) { space.distanceFromGoal(StubState("D", 42)) }
+  }
+
   /** test the protected search method to see if it finds the goal state */
   test("solve simple case") {
     val searcher: AStarSearch[StubState, StubTransition] = new AStarSearch[StubState, StubTransition](space)
