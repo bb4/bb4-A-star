@@ -2,34 +2,15 @@
 package com.barrybecker4.search
 
 /**
+  * @param id some unique identifier
+  * @param estDistanceFromGoal the estimated distance to goal should be an optimistic estimate
+  *   in order to be admissible by A*.
   * @author Barry Becker
   */
-class StubState {
-
-  private var id: String = _
-  private[search] var estDistanceFromGoal: Int = 0
+case class StubState(id: String, estDistanceFromGoal: Int) {
 
   /** @param id some unique identifier */
-  def this(id: String) {
-    this()
-    this.id = id
-  }
-
-  /** @param id some unique identifier*/
-  def this(id: Int) {
-    this()
-    this.id = Integer.toString(id)
-  }
-
-  /**
-    * @param id     some unique identifier
-    * @param estDistanceFromGoal the estimated distance to goal should be an optimistic estimate in order to
-    *                    be admissible by A*.
-    */
-  def this(id: String, estDistanceFromGoal: Int) {
-    this(id)
-    this.estDistanceFromGoal = estDistanceFromGoal
-  }
+  def this(id: Int, estDistanceFromGoal: Int = 0) { this(Integer.toString(id), estDistanceFromGoal) }
 
   private[search] def getDistanceFromGoal: Int = estDistanceFromGoal
 

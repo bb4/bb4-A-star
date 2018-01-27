@@ -20,13 +20,13 @@ import scala.collection.mutable
   */
 class StubProblem {
 
-  val stateA: StubState = new StubState("A", 8)
-  val stateB: StubState = new StubState("B", 7)
-  val stateC: StubState = new StubState("C", 6)
-  val stateD: StubState = new StubState("D", 5)
-  val stateE: StubState = new StubState("E", 4)
-  private val goalState: StubState = new StubState("goal", 0)
-  private val initialState: StubState = new StubState("start", 9)
+  val stateA: StubState = StubState("A", 8)
+  val stateB: StubState = StubState("B", 7)
+  val stateC: StubState = StubState("C", 6)
+  val stateD: StubState = StubState("D", 5)
+  val stateE: StubState = StubState("E", 4)
+  private val goalState: StubState = StubState("goal", 0)
+  private val initialState: StubState = StubState("start", 9)
 
   val transitionMap: mutable.Map[StubState, Seq[StubTransition]] = mutable.Map(
     initialState-> Seq(StubTransition(stateA, 3), StubTransition(stateD, 4)),
