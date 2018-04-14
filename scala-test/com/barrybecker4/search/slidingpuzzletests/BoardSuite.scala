@@ -6,7 +6,7 @@ import com.barrybecker4.search.slidingpuzzle.{Board, Transition}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 /**
-  * @author Barry on 7/11/2015.
+  * @author Barry Becker
   */
 class BoardSuite extends FunSuite with BeforeAndAfter {
   private var board: Board = _
@@ -20,7 +20,7 @@ class BoardSuite extends FunSuite with BeforeAndAfter {
 
   test("Dimension") {
     board = new Board(ALMOST_SOLVED_3)
-    assertResult( 3) { board.dimension }
+    assertResult(3) { board.dimension }
   }
 
   test("Equality") {
