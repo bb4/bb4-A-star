@@ -20,8 +20,7 @@ class Node[S, T](val state: S, val transition: Option[T] = None,
                  val pathCost: Int = 0, val estimatedFutureCost: Int = 1)
   extends Comparable[Node[S, T]] {
 
-  /**
-    * Use this only when there is no transition to this node.
+  /** Use this only when there is no transition to this node.
     * @param initialState        initial state
     * @param estFutureCost the cost of getting here plus the estimated future cost to get to the finish.
     */
@@ -40,9 +39,7 @@ class Node[S, T](val state: S, val transition: Option[T] = None,
 
   override def hashCode: Int = state.hashCode
 
-  /**
-    * @return a list of nodes from the start state to this state.
-    */
+  /** @return a list of nodes from the start state to this state. */
   def asTransitionList: Seq[T] = {
     var solution: List[T] = List()
     var node: Node[S, T] = this

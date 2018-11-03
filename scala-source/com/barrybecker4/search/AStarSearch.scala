@@ -1,16 +1,14 @@
-// Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+// Copyright by Barry G. Becker, 2017-2018. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search
 
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
-object AStarSearch {
+object AStarSearch extends App {
   // A trivial example of how the search works
-  def main(args:Array[String]) {
-    val search = new AStarSearch[String, (String, String)](new TrivialSearchSpace())
-    val path = search.solve.get
-    println("path = " + path.mkString(", "))
-  }
+  val search = new AStarSearch[String, (String, String)](new TrivialSearchSpace())
+  val path = search.solve.get
+  println("path = " + path.mkString(", "))
 }
 
 /**
@@ -22,8 +20,8 @@ object AStarSearch {
   * The performance of this search is very dependent on the design of the search space.
   * Here are some possible optimizations to consider when designing the SearchSpace and its components.
   * - The visited list may grow huge if the space is very large causing out of memory issues.
-  * - Calculate distance metrics in the constructor (or using lazy initialization) of S. S and T should be immutable.
-  * - Try to make the equals method in S as efficient as possible as it will be called a lot.
+  * - Calculate distance metrics in the constructor (or using lazy initialization) of S. S and T must be immutable.
+  * - Try to make the equals method in S as efficiently as possible as it will be called a lot.
   * - When creating neighbors, use the fact that there is going to be an incremental change to the distance
   * and do not recompute it from scratch. Hint: use a private constructor, that takes the distance as a param.
   * - Sort the neighbors so that the most promising is delivered first.
@@ -86,8 +84,8 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
     */
   protected def search(): Option[Node[S, T]] = {
     while (!openQueue.isEmpty && !stopped) {
-      val currentNode: Option[Node[S, T]] = processNext(openQueue.pop)
-      if (currentNode.isDefined) return currentNode
+      val solutionNode: Option[Node[S, T]] = processNext(openQueue.pop)
+      if (solutionNode.isDefined) return solutionNode
     }
     None // failed to find a solution
   }

@@ -10,16 +10,14 @@ trait UpdatablePriorityQueue[S, T] {
   /** @return the node with the lowest priority */
   def pop: Node[S, T]
 
-  /**
-    * Find the node with given state, and update its priority.
+  /** Find the node with given state, and update its priority.
     * If the node is not currently in the heap, it is added.
     * @param node node
     * @return true if the node was found and updated
     */
   def addOrUpdate(node: Node[S, T]): Boolean
 
-  /**
-    * Inserts the specified element into this priority queue.
+  /** Inserts the specified element into this priority queue.
     * Throws NullPointerException if the specified element is null.
     * Throws ClassCastException if the specified element cannot be compared with elements currently
     *    in this priority queue according to the priority queue's ordering

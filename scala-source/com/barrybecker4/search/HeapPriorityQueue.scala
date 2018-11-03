@@ -12,15 +12,13 @@ import scala.collection.mutable
   * with two modifications:
   *  - It allows updating the priority of nodes (needed by A*)
   *  - Does not implement Queue interface since that has more methods than needed.
-  *
   * @author Josh Bloch, Doug Lea, modified by Barry Becker as indicated above.
   */
 object HeapPriorityQueue {
 
   private val DEFAULT_INITIAL_CAPACITY: Int = 256
 
-  /**
-    * The maximum size of the array to allocate.
+  /** The maximum size of the array to allocate.
     * Some VMs reserve header words in an array. Attempts to allocate larger arrays may result in OutOfMemoryError.
     */
   private val MAX_ARRAY_SIZE: Int = Integer.MAX_VALUE - 8
@@ -32,10 +30,8 @@ object HeapPriorityQueue {
   }
 }
 
-/**
-  * Creates a PriorityQueue with the specified initial capacity
+/** Creates a PriorityQueue with the specified initial capacity
   * that orders its elements according to the specified comparator.
- *
   * @param initialCapacity the initial capacity for this priority queue
   * @param comparator The comparator, or null if priority queue uses elements' natural ordering.
   * S represents a state in the global search space.
@@ -45,13 +41,11 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
                               val comparator: Comparator[_ >: Node[S, T]] = null)
   extends UpdatablePriorityQueue[S, T] {
 
-  /**
-    * Priority queue represented as a balanced binary heap: the two
-    * children of queue[n] are queue[2*n+1] and queue[2*(n+1)].  The
-    * priority queue is ordered by comparator, or by the elements'
-    * natural ordering, if comparator is null: For each node n in the
-    * heap and each descendant d of n, n <= d.  The element with the
-    * lowest value is in queue[0], assuming the queue is nonempty.
+  /** Priority queue represented as a balanced binary heap.
+    * The two children of queue[n] are queue[2*n+1] and queue[2*(n+1)].
+    * The priority queue is ordered by comparator, or by the elements' natural ordering.
+    * If comparator is null: For each node n in the heap and each descendant d of n, n <= d.
+    * The element with the lowest value is in queue[0], assuming the queue is nonempty.
     */
   private var queue: Array[Node[S, T]] = new Array[Node[S, T]](initialCapacity)
 
@@ -61,9 +55,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
   /** The number of elements in the priority queue. */
   private var _size: Int = 0
 
-  /**
-    * Increases the capacity of the array.
-    *
+  /** Increases the capacity of the array.
     * @param minCapacity the desired minimum capacity
     */
   private def grow(minCapacity: Int) {
@@ -94,8 +86,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     }
   }
 
-  /**
-    * Removes the ith element from queue.
+  /** Removes the ith element from queue.
     * First remove the last put where the removed one was.
     * Then shift it up.
     */
@@ -115,12 +106,11 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
 
   def add(e: Node[S, T]): Boolean = offer(e)
 
-  /**
-    * Inserts the specified element into this priority queue.
+  /** Inserts the specified element into this priority queue.
     * Throws NullPointerException if the specified element is null.
     * Throws ClassCastException if the specified element cannot be compared with elements currently
     *    in this priority queue according to the priority queue's ordering
-    * @return { @code true} if the specified node is added
+    * @return true if the specified node is added
     */
   def offer(node: Node[S, T]): Boolean = {
     if (node == null) throw new NullPointerException
@@ -150,12 +140,11 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     _size = 0
   }
 
-  /**
-    * Inserts item x at position k, maintaining heap invariant by
+  /** Inserts item x at position k, maintaining heap invariant by
     * promoting x up the tree until it is greater than or equal to
     * its parent, or is the root.
     *
-    * To simplify and speed up coercions and comparisons. the
+    * To simplify and speed up coercions and comparisons, the
     * Comparable and Comparator versions are separated into different
     * methods that are otherwise identical. (Similarly for siftDown.)
     *
@@ -199,8 +188,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     indexMap.put(x, k)
   }
 
-  /**
-    * Inserts item x at position k, maintaining heap invariant by
+  /** Inserts item x at position k, maintaining heap invariant by
     * demoting x down the tree repeatedly until it is less than or
     * equal to its children or is a leaf.
     *
