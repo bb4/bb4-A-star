@@ -2,6 +2,9 @@ description = 'A-star search algorithm'
 group = 'com.barrybecker4'
 version = '1.5-SNAPSHOT'
 
+plugins {
+    id "com.github.maiflai.scalatest" version "0.19" // needed to run scala tests
+}
 apply from: 'https://raw.github.com/barrybecker4/bb4-common/master/bb4.gradle'
 
 project.archivesBaseName = 'bb4-A-star'
