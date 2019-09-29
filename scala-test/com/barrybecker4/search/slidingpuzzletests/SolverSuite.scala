@@ -101,7 +101,7 @@ abstract class SolverSuite extends FunSuite with BeforeAndAfter {
     runCases(testCases, 0.5)
   }
 
-  private def doRun(testNum: Int, timeLimit: Double) {
+  private def doRun(testNum: Int, timeLimit: Double): Unit = {
     val file: String = "puzzle" + testNum + ".txt"
     val initial: Board = reader.read(file)
     val timer: Watch = new Watch
@@ -113,7 +113,7 @@ abstract class SolverSuite extends FunSuite with BeforeAndAfter {
     assert(elapsed < timeLimit, "Took too long " + elapsed)
   }
 
-  protected def runCases(testCases: List[Case], timeLimitSecs: Double) {
+  protected def runCases(testCases: List[Case], timeLimitSecs: Double): Unit = {
     val timer: Watch = new Watch
     for (testCase <- testCases) {
       runCase(testCase)
@@ -124,7 +124,7 @@ abstract class SolverSuite extends FunSuite with BeforeAndAfter {
     assert(elapsed > (timeLimitSecs / 1000.0), "TOO FAST!?!: " + elapsed + "seconds.")
   }
 
-  private def runCase(testCase: Case) {
+  private def runCase(testCase: Case): Unit = {
     System.out.println(testCase.filename)
     val initial: Board = reader.read(testCase.filename)
     solver = createSolver(initial)

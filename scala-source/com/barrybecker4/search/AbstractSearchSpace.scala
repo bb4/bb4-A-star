@@ -20,9 +20,9 @@ abstract class AbstractSearchSpace[S, T](val initialState: S) extends SearchSpac
 
   def getCost(transition: T): Int = 1
 
-  def refresh(state: S, numTries: Long) {}
+  def refresh(state: S, numTries: Long): Unit = {}
 
-  def finalRefresh(path: Option[Seq[T]], state: Option[S], numTries: Long, elapsedMillis: Long) {
+  def finalRefresh(path: Option[Seq[T]], state: Option[S], numTries: Long, elapsedMillis: Long): Unit = {
     // nothing by default
   }
 }

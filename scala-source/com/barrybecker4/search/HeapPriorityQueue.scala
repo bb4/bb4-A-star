@@ -58,7 +58,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
   /** Increases the capacity of the array.
     * @param minCapacity the desired minimum capacity
     */
-  private def grow(minCapacity: Int) {
+  private def grow(minCapacity: Int): Unit = {
     val oldCapacity: Int = queue.length
     // Double size if small; else grow by 50%
     var newCapacity: Int = oldCapacity + (if (oldCapacity < 4096) oldCapacity + 2
@@ -90,7 +90,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     * First remove the last put where the removed one was.
     * Then shift it up.
     */
-  private def removeAt(i: Int) {
+  private def removeAt(i: Int): Unit =  {
     assert(i >= 0 && i < size)
     _size -= 1
     val s: Int = _size
@@ -132,7 +132,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
   def isEmpty: Boolean = _size == 0
 
   /** Removes all of the elements from this priority queue. */
-  def clear() {
+  def clear(): Unit =  {
     for (i <- 0 until size) {
       indexMap.remove(queue(i))
       queue(i) = null
@@ -151,12 +151,12 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     * @param k the position to fill
     * @param x the item to insert
     */
-  private def siftUp(k: Int, x: Node[S, T]) {
+  private def siftUp(k: Int, x: Node[S, T]): Unit =  {
     if (comparator != null) siftUpUsingComparator(k, x)
     else siftUpComparable(k, x)
   }
 
-  private def siftUpComparable(index: Int, key: Node[S, T]) {
+  private def siftUpComparable(index: Int, key: Node[S, T]): Unit =  {
     var k = index
     var done = false
     while (k > 0 && !done) {
@@ -172,7 +172,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     indexMap.put(key, k)
   }
 
-  private def siftUpUsingComparator(index: Int, x: Node[S, T]) {
+  private def siftUpUsingComparator(index: Int, x: Node[S, T]): Unit =  {
     var k = index
     var done = false
     while (k > 0 && !done) {
@@ -195,12 +195,12 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     * @param k the position to fill
     * @param x the item to insert
     */
-  private def siftDown(k: Int, x: Node[S, T]) {
+  private def siftDown(k: Int, x: Node[S, T]): Unit =  {
     if (comparator != null) siftDownUsingComparator(k, x)
     else siftDownComparable(k, x)
   }
 
-  private def siftDownComparable(index: Int, key: Node[S, T]) {
+  private def siftDownComparable(index: Int, key: Node[S, T]): Unit =  {
     var k = index
     var done = false
     val half: Int = _size >>> 1 // loop while a non-leaf
@@ -221,7 +221,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     indexMap.put(key, k)
   }
 
-  private def siftDownUsingComparator(index: Int, x: Node[S, T]) {
+  private def siftDownUsingComparator(index: Int, x: Node[S, T]): Unit =  {
     var k = index
     var done = false
     val half: Int = _size >>> 1

@@ -64,7 +64,7 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
     pathToSolution
   }
 
-  private def initialize() {
+  private def initialize(): Unit = {
     stopped = false
     val startingState: S = searchSpace.initialState
     val startNode: Node[S, T] = new Node[S, T](startingState, searchSpace.distanceFromGoal(startingState))
@@ -76,7 +76,8 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
   def getSolution: Option[Seq[T]] = if (solution.isDefined) Some(solution.get.asTransitionList) else None
 
   /** Tell the search to stop */
-  def stop() { stopped = true }
+  def stop(): Unit =
+    stopped = true
 
   /**
     * Best first search for a solution.

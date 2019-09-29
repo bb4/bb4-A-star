@@ -189,7 +189,7 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
     throw new IllegalStateException("No space position!")
   }
 
-  private def swap(row1: Int, col1: Int, row2: Int, col2: Int, b: Array[Byte]) {
+  private def swap(row1: Int, col1: Int, row2: Int, col2: Int, b: Array[Byte]): Unit = {
     val p1: Byte = (row1 * side + col1).toByte
     val p2: Byte = (row2 * side + col2).toByte
     val temp: Byte = b(p1)
