@@ -15,7 +15,7 @@ trait ISearcher[S, T] {
   def getSolution: Option[Seq[T]]
 
   /** Tell the search to stop */
-  def stop()
+  def stop(): Unit
 }
 
 

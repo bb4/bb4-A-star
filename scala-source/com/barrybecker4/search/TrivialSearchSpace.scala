@@ -18,7 +18,7 @@ class TrivialSearchSpace extends SearchSpace[String, (String, String)] {
     override def alreadySeen(state: String, seen: mutable.Set[String]): Boolean = false
     override def distanceFromGoal(state: String): Int = 1
     override def getCost(transition: (String, String)): Int = 1
-    override def refresh(state: String, numTries: Long) {}
+    override def refresh(state: String, numTries: Long): Unit = {}
     override def finalRefresh(path: Option[Seq[(String, String)]],
-                              state: Option[String], numTries: Long, elapsedMillis: Long) {}
+                              state: Option[String], numTries: Long, elapsedMillis: Long): Unit = {}
 }

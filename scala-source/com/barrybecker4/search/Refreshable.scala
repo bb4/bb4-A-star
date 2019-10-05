@@ -12,7 +12,7 @@ trait Refreshable[S, T] {
     * @param state    if the current state to show.
     * @param numTries number of tries so far.
     */
-  def refresh(state: S, numTries: Long)
+  def refresh(state: S, numTries: Long): Unit
 
   /**
     * Show the path to the goal state at the end.
@@ -21,5 +21,5 @@ trait Refreshable[S, T] {
     * @param numTries      number of tries it took to find that final state.
     * @param elapsedMillis number of milliseconds it took to find the solution.
     */
-  def finalRefresh(path: Option[Seq[T]], state: Option[S], numTries: Long, elapsedMillis: Long)
+  def finalRefresh(path: Option[Seq[T]], state: Option[S], numTries: Long, elapsedMillis: Long): Unit
 }
