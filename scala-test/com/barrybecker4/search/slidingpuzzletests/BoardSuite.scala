@@ -3,12 +3,13 @@ package com.barrybecker4.search.slidingpuzzletests
 
 import com.barrybecker4.search.Location
 import com.barrybecker4.search.slidingpuzzle.{Board, Transition}
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.BeforeAndAfter
 
 /**
   * @author Barry Becker
   */
-class BoardSuite extends FunSuite with BeforeAndAfter {
+class BoardSuite extends AnyFunSuite with BeforeAndAfter {
   private var board: Board = _
   private val SOLVED_3: Array[Array[Int]] = Array[Array[Int]](Array(1, 2, 3), Array(4, 5, 6), Array(7, 8, 0))
   private val ALMOST_SOLVED_3: Array[Array[Int]] = Array[Array[Int]](Array(1, 2, 3), Array(4, 5, 6), Array(7, 0, 8))

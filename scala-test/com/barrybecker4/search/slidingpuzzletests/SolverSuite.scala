@@ -3,12 +3,13 @@ package com.barrybecker4.search.slidingpuzzletests
 
 import com.barrybecker4.search.Watch
 import com.barrybecker4.search.slidingpuzzle.{Board, BoardReader, Solver}
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.BeforeAndAfter
 
 /**
   * @author Barry Becker
   */
-abstract class SolverSuite extends FunSuite with BeforeAndAfter {
+abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
   protected var solver: Solver = _
   protected var reader: BoardReader = _
 
