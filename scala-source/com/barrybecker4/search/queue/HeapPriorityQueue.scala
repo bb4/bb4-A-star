@@ -1,9 +1,10 @@
 // Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
-package com.barrybecker4.search
+package com.barrybecker4.search.queue
+
+import com.barrybecker4.search.Node
 
 import java.util
 import java.util.Comparator
-
 import scala.collection.mutable
 
 /**

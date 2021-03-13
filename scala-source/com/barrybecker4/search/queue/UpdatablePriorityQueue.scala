@@ -1,8 +1,10 @@
-// Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
-package com.barrybecker4.search
+package com.barrybecker4.search.queue
+
+import com.barrybecker4.search.Node
 
 /**
   * A priority queue that allows the priority keys to be updated dynamically.
+  *
   * @author Barry Becker
   */
 trait UpdatablePriorityQueue[S, T] {
@@ -12,6 +14,7 @@ trait UpdatablePriorityQueue[S, T] {
 
   /** Find the node with given state, and update its priority.
     * If the node is not currently in the heap, it is added.
+    *
     * @param node node
     * @return true if the node was found and updated
     */
@@ -20,7 +23,8 @@ trait UpdatablePriorityQueue[S, T] {
   /** Inserts the specified element into this priority queue.
     * Throws NullPointerException if the specified element is null.
     * Throws ClassCastException if the specified element cannot be compared with elements currently
-    *    in this priority queue according to the priority queue's ordering
+    * in this priority queue according to the priority queue's ordering
+    *
     * @return { @code true} (as specified by { @link Collection#add})
     */
   def add(node: Node[S, T]): Boolean

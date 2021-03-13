@@ -1,6 +1,9 @@
 // Copyright by Barry G. Becker, 2017-2018. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search
 
+import com.barrybecker4.search.queue.{HeapPriorityQueue, UpdatablePriorityQueue}
+import com.barrybecker4.search.space.{SearchSpace, TrivialSearchSpace}
+
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
