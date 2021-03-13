@@ -2,17 +2,25 @@
 package com.barrybecker4.search
 
 /**
-  * A UI element that can be refreshed to show the current state.
+  * A UI element that can be refreshed to show the current state, or show an animated transition to a new state.
   * @author Barry Becker
   */
 trait Refreshable[S, T] {
 
   /**
     * Call when you want the UI to update.
-    * @param state    if the current state to show.
+    * @param state the new state to show.
     * @param numTries number of tries so far.
     */
   def refresh(state: S, numTries: Long): Unit
+
+  /**
+    * Call when you want the UI to show an animated transition to a new state
+    * @param state the current state
+    * @param transition describes the transition to the new state
+    * @return the new state
+    */
+  def animateTransition(state: S, transition: T): S
 
   /**
     * Show the path to the goal state at the end.

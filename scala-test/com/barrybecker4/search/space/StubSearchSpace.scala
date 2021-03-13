@@ -26,4 +26,6 @@ class StubSearchSpace
   def distanceFromGoal(state: StubState): Int = state.getDistanceFromGoal
 
   override def getCost(transition: StubTransition): Int = transition.cost
+
+  override def animateTransition(state: StubState, transition: StubTransition): StubState = transition.newState
 }

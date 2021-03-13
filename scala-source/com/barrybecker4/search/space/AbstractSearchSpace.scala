@@ -25,4 +25,6 @@ abstract class AbstractSearchSpace[S, T](val initialState: S) extends SearchSpac
   def finalRefresh(path: Option[Seq[T]], state: Option[S], numTries: Long, elapsedMillis: Long): Unit = {
     // nothing by default
   }
+
+  override def animateTransition(state: S, trans: T): S = transition(state, trans)
 }
