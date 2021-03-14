@@ -27,5 +27,5 @@ class StubSearchSpace
 
   override def getCost(transition: StubTransition): Int = transition.cost
 
-  override def animateTransition(state: StubState, transition: StubTransition): StubState = transition.newState
+  override def animateTransition(transition: StubTransition): StubState = transition.newState
 }

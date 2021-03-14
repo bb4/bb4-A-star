@@ -26,5 +26,5 @@ abstract class AbstractSearchSpace[S, T](val initialState: S) extends SearchSpac
     // nothing by default
   }
 
-  override def animateTransition(state: S, trans: T): S = transition(state, trans)
+  override def animateTransition(trans: T): S = this.transition(initialState, trans)
 }

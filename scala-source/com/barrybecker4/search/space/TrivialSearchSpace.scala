@@ -21,5 +21,5 @@ class TrivialSearchSpace extends SearchSpace[String, (String, String)] {
     override def refresh(state: String, numTries: Long): Unit = {}
     override def finalRefresh(path: Option[Seq[(String, String)]],
                               state: Option[String], numTries: Long, elapsedMillis: Long): Unit = {}
-    override def animateTransition(state: String, trans: (String, String)): String = transition(state, trans)
+    override def animateTransition(trans: (String, String)): String = trans._2
 }

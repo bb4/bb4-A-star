@@ -16,11 +16,10 @@ trait Refreshable[S, T] {
 
   /**
     * Call when you want the UI to show an animated transition to a new state
-    * @param state the current state
     * @param transition describes the transition to the new state
     * @return the new state
     */
-  def animateTransition(state: S, transition: T): S
+  def animateTransition(transition: T): S
 
   /**
     * Show the path to the goal state at the end.

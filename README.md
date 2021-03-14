@@ -5,5 +5,5 @@ Scala implementation of generic [A-Star search algorithm](https://en.wikipedia.o
 
 * Install git, scala
 * git clone https://github.com/barrybecker4/bb4-A-star.git
-* In bash shell run `./gradlew assemble test`
+* In bash shell run `./gradlew`
 * Or import gradle project into intellij and run from there (preferred)
