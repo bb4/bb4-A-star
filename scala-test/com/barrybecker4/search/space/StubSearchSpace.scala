@@ -3,6 +3,7 @@ package com.barrybecker4.search.space
 
 import com.barrybecker4.search.{StubProblem, StubState, StubTransition}
 
+
 /**
   * A fake, very simple, search space for use in unit tests.
   * Teh StubNodes define a network, with costs on edges, that can be searched by A*.

@@ -37,8 +37,8 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
                         val openQueue: UpdatablePriorityQueue[S, T] = new HeapPriorityQueue[S, T])
   extends ISearcher[S, T] {
 
-  /** Provides the cost for the lowest cost path from the specified start state to the goal state (g score) */
-  private var pathCost: mutable.Map[S, Integer] = new mutable.HashMap[S, Integer]
+  /** Provides the cost for the lowest cost path from the specified start state to some specified state (g score) */
+  private val pathCost: mutable.Map[S, Int] = new mutable.HashMap[S, Int]
 
   private var solution: Option[Node[S, T]] = None
 
@@ -59,11 +59,11 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
     val startTime: Long = System.currentTimeMillis
     initialize()
     val solutionState: Option[Node[S, T]] = search()
-    val pathToSolution: Option[Seq[T]] = getSolution
-    val solution: Option[S] = if (solutionState.isDefined) Some(solutionState.get.state) else None
+    val pathToSolution: Option[Seq[T]] = getPathToSolution
+    val solutionIfExists: Option[S] = if (solutionState.isDefined) Some(solutionState.get.state) else None
 
     val elapsedTime: Long = System.currentTimeMillis - startTime
-    searchSpace.finalRefresh(pathToSolution, solution, numTries, elapsedTime)
+    searchSpace.finalRefresh(pathToSolution, solutionIfExists, numTries, elapsedTime)
     pathToSolution
   }
 
@@ -75,8 +75,7 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
     pathCost.put(startingState, 0)
   }
 
-  /** @return the solution - null until it is found */
-  def getSolution: Option[Seq[T]] = if (solution.isDefined) Some(solution.get.asTransitionList) else None
+  def getPathToSolution: Option[Seq[T]] = if (solution.isDefined) Some(solution.get.asTransitionList) else None
 
   /** Tell the search to stop */
   def stop(): Unit =
@@ -115,9 +114,9 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
       if (!visited.contains(nbr)) {
         val estPathCost: Int = pathCost(currentState) + searchSpace.getCost(transition)
         if (!pathCost.contains(nbr) || estPathCost < pathCost(nbr)) {
-          val estFutureCost: Int = estPathCost + searchSpace.distanceFromGoal(nbr)
+          val estTotalCost: Int = estPathCost + searchSpace.distanceFromGoal(nbr)
           val child: Node[S, T] =
-            new Node[S, T](nbr, Some(transition), Some(currentNode), estPathCost, estFutureCost)
+            new Node[S, T](nbr, Some(transition), Some(currentNode), estPathCost, estTotalCost)
           pathCost.put(nbr, estPathCost)
           openQueue.addOrUpdate(child)
           numTries += 1

@@ -22,11 +22,11 @@ object HeapPriorityQueue {
   /** The maximum size of the array to allocate.
     * Some VMs reserve header words in an array. Attempts to allocate larger arrays may result in OutOfMemoryError.
     */
-  private val MAX_ARRAY_SIZE: Int = Integer.MAX_VALUE - 8
+  private val MAX_ARRAY_SIZE: Int = Int.MaxValue - 8
 
   private def hugeCapacity(minCapacity: Int): Int = {
     if (minCapacity < 0) throw new OutOfMemoryError
-    if (minCapacity > MAX_ARRAY_SIZE) Integer.MAX_VALUE
+    if (minCapacity > MAX_ARRAY_SIZE) Int.MaxValue
     else MAX_ARRAY_SIZE
   }
 }
@@ -51,7 +51,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
   private var queue: Array[Node[S, T]] = new Array[Node[S, T]](initialCapacity)
 
   /** allows for quick lookup of a nodes position in the heap. Required for updating priority of nodes */
-  private val indexMap: mutable.Map[Node[S, T], Integer] = mutable.Map[Node[S, T], Integer]()
+  private val indexMap: mutable.Map[Node[S, T], Int] = mutable.Map[Node[S, T], Int]()
 
   /** The number of elements in the priority queue. */
   private var _size: Int = 0

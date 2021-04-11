@@ -11,8 +11,8 @@ trait ISearcher[S, T] {
   /** @return a sequence of transitions leading from the initial state to the goal state if there is one. */
   def solve: Option[Seq[T]]
 
-  /** @return the sequence of steps to the solution - None until it is found */
-  def getSolution: Option[Seq[T]]
+  /** @return the sequence of transitions to the solution - None until it is found */
+  def getPathToSolution: Option[Seq[T]]
 
   /** Tell the search to stop */
   def stop(): Unit

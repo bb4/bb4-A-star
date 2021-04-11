@@ -11,24 +11,24 @@ package com.barrybecker4.search
   * @param transition the transformation that got to this state
   * @param previous the previous state
   * @param pathCost cost from initial position to the state represented by this node
-  * @param estimatedFutureCost the cost of getting here plus the estimated future cost to get to the goal.
+  * @param estimatedTotalCost the cost of getting here plus the estimated future cost to get to the goal.
   *    IOW, an estimate of the total eventual cost of the path from start to goal running through this node.
   * @author Barry Becker
   */
 class Node[S, T](val state: S, val transition: Option[T] = None,
                  var previous: Option[Node[S, T]] = None,
-                 val pathCost: Int = 0, val estimatedFutureCost: Int = 1)
+                 val pathCost: Int = 0, val estimatedTotalCost: Int = 1)
   extends Comparable[Node[S, T]] {
 
   /** Use this only when there is no transition to this node.
-    * @param initialState        initial state
+    * @param initialState  initial state
     * @param estFutureCost the cost of getting here plus the estimated future cost to get to the finish.
     */
   def this(initialState: S, estFutureCost: Int) = {
-    this(initialState, estimatedFutureCost = estFutureCost)
+    this(initialState, estimatedTotalCost = estFutureCost)
   }
 
-  def compareTo(otherNode: Node[S, T]): Int = estimatedFutureCost - otherNode.estimatedFutureCost
+  def compareTo(otherNode: Node[S, T]): Int = estimatedTotalCost - otherNode.estimatedTotalCost
 
   override def equals(other: Any): Boolean = {
     other match {
@@ -50,5 +50,20 @@ class Node[S, T](val state: S, val transition: Option[T] = None,
     solution
   }
 
-  override def toString: String = "[" + state + ", pathCost=" + pathCost + " totalCost=" + estimatedFutureCost + "]"
+  /** @return true if state is in the path terminated by this node */
+  def containsStateInPath(state: S): Boolean = {
+    var currentNode = this
+    if (currentNode.state == state) {
+      return true
+    }
+    while (currentNode.previous.isDefined) {
+      currentNode = currentNode.previous.get
+      if (currentNode.state == state) {
+        return true
+      }
+    }
+    false
+  }
+
+  override def toString: String = "[" + state + ", pathCost=" + pathCost + " totalCost=" + estimatedTotalCost + "]"
 }

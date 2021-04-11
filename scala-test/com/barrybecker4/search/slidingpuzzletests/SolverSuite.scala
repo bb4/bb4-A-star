@@ -38,7 +38,7 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
     val initial: Board = reader.read("puzzle07.txt")
     solver = createSolver(initial)
     assertResult(7, "Unexpected number of moves for puzzle07.txt") { solver.moves }
-    val path: String = getSolutionSequence(solver.solution)
+    val path: String = getSolutionSequence(solver.getSolution(initial))
     assert(
       path == "3\n" + " 1  2  3 \n" + " 0  7  6 \n" + " 5  4  8 \n" + "3\n" + " 1  2  3 \n" + " 7  0  6 \n" + " 5  4  8 \n" + "3\n" + " 1  2  3 \n" + " 7  4  6 \n" + " 5  0  8 \n" + "3\n" + " 1  2  3 \n" + " 7  4  6 \n" + " 0  5  8 \n" + "3\n" + " 1  2  3 \n" + " 0  4  6 \n" + " 7  5  8 \n" + "3\n" + " 1  2  3 \n" + " 4  0  6 \n" + " 7  5  8 \n" + "3\n" + " 1  2  3 \n" + " 4  5  6 \n" + " 7  0  8 \n" + "3\n" + " 1  2  3 \n" + " 4  5  6 \n" + " 7  8  0 \n" ||
       path == "3\n" + " 1  2  3 \n" + " 0  7  6 \n" + " 5  4  8 \n" + "3\n" + " 1  2  3 \n" + " 5  7  6 \n" + " 0  4  8 \n" + "3\n" + " 1  2  3 \n" + " 5  7  6 \n" + " 4  0  8 \n" + "3\n" + " 1  2  3 \n" + " 5  0  6 \n" + " 4  7  8 \n" + "3\n" + " 1  2  3 \n" + " 0  5  6 \n" + " 4  7  8 \n" + "3\n" + " 1  2  3 \n" + " 4  5  6 \n" + " 0  7  8 \n" + "3\n" + " 1  2  3 \n" + " 4  5  6 \n" + " 7  0  8 \n" + "3\n" + " 1  2  3 \n" + " 4  5  6 \n" + " 7  8  0 \n"
@@ -49,16 +49,30 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
     doRun(11, 2.0)
   }
 
-  test("SolveHard") {
+
+  test("SolveMedium") {
+    val testNum: Int = 11
+    val file: String = "puzzle" + testNum + ".txt"
+    val initial: Board = reader.read(file)
+    val timer: Watch = new Watch
+    solver = createSolver(initial)
+    val elapsed: Double = timer.getElapsedSeconds
+    System.out.println("elapsed = " + elapsed + " seconds.")
+    assertResult( testNum, "Unexpected number of moves for " + file) { solver.moves }
+    assert(solver.isSolvable, file + " unexpectedly not solvable")
+    assert(elapsed < 10.0, "Took too long " + elapsed)
+  }
+
+  def verifyHardSolved(timeLimit: Double = 10.0): Unit = {
     val file: String = "puzzle4x4-hard1.txt"
     val initial: Board = reader.read(file)
     val timer: Watch = new Watch
     solver = createSolver(initial)
-    val elapsed: Double = timer.getElapsedTime
+    val elapsed: Double = timer.getElapsedSeconds
     System.out.println("elapsed = " + elapsed + " seconds.")
     assertResult(38, "Unexpected number of moves for " + file) { solver.moves }
     assertResult(true, file + " unexpectedly not solvable") { solver.isSolvable }
-    assert(elapsed < 10.0, "Took too long " + elapsed)
+    assert(elapsed < timeLimit, "Took too long " + elapsed)
   }
 
   private def getSolutionSequence(seq: Iterable[Board]): String = {
@@ -91,7 +105,7 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
       new Case("puzzle3x3-unsolvable1.txt", -1, false),
       new Case("puzzle3x3-unsolvable2.txt", -1, false)
       )
-    runCases(testCases, 6.0)
+    runCases(testCases, 22.0)
   }
 
   test("run2by2Cases") {
@@ -107,7 +121,7 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
     val initial: Board = reader.read(file)
     val timer: Watch = new Watch
     solver = createSolver(initial)
-    val elapsed: Double = timer.getElapsedTime
+    val elapsed: Double = timer.getElapsedSeconds
     System.out.println("elapsed = " + elapsed + " seconds.")
     assertResult(testNum, "Unexpected number of moves for " + file) { solver.moves }
     assert(solver.isSolvable, file + " unexpectedly not solvable")
@@ -119,7 +133,7 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
     for (testCase <- testCases) {
       runCase(testCase)
     }
-    val elapsed: Double = timer.getElapsedTime
+    val elapsed: Double = timer.getElapsedSeconds
     System.out.println("Elapsed time = " + elapsed + " seconds.")
     assert(elapsed < timeLimitSecs, "Took too long: " + elapsed + "seconds. Wanted " + timeLimitSecs)
     assert(elapsed > (timeLimitSecs / 1000.0), "TOO FAST!?!: " + elapsed + "seconds.")
@@ -132,14 +146,14 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
     assertResult(testCase.expNumMoves, "Unexpected number of moves for " + testCase.filename) { solver.moves }
     if (testCase.expIsSolvable) {
       assert(solver.isSolvable, "Unexpectedly not solvable")
-      val sol: Iterable[Board] = solver.solution
+      val sol: Iterable[Board] = solver.getSolution(initial)
       for (b <- sol) {
         System.out.println(b)
       }
     }
     else {
       assert(!solver.isSolvable, "Unexpectedly solvable")
-      assert(solver.solution == null, "Solution not null")
+      assert(solver.getSolution(initial) == null, "Solution not null")
     }
   }
 }

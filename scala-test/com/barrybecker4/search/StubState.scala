@@ -11,7 +11,7 @@ case class StubState(id: String, estDistanceFromGoal: Int) {
 
   /** @param id some unique identifier */
   def this(id: Int, estDistanceFromGoal: Int = 0) = {
-    this(Integer.toString(id), estDistanceFromGoal)
+    this(id.toString, estDistanceFromGoal)
   }
 
   private[search] def getDistanceFromGoal: Int = estDistanceFromGoal
