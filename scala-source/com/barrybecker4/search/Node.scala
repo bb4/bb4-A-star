@@ -24,7 +24,7 @@ class Node[S, T](val state: S, val transition: Option[T] = None,
     * @param initialState        initial state
     * @param estFutureCost the cost of getting here plus the estimated future cost to get to the finish.
     */
-  def this(initialState: S, estFutureCost: Int) {
+  def this(initialState: S, estFutureCost: Int) = {
     this(initialState, estimatedFutureCost = estFutureCost)
   }
 

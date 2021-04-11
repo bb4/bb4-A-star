@@ -10,7 +10,9 @@ package com.barrybecker4.search
 case class StubState(id: String, estDistanceFromGoal: Int) {
 
   /** @param id some unique identifier */
-  def this(id: Int, estDistanceFromGoal: Int = 0) { this(Integer.toString(id), estDistanceFromGoal) }
+  def this(id: Int, estDistanceFromGoal: Int = 0) = {
+    this(Integer.toString(id), estDistanceFromGoal)
+  }
 
   private[search] def getDistanceFromGoal: Int = estDistanceFromGoal
 
