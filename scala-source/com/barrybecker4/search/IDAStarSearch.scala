@@ -63,7 +63,10 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
     stopped = true
 
   /**
-    * Depth first search for a solution using iterative deepening. Explor most promising nodes first.
+    * Depth first search for a solution using iterative deepening. Explore the most promising nodes first.
+    * Continue to expand an optimal patch from the startNode using iterative deepening of the search in the tree.
+    * At each iteration, the threshold used for the next iteration is the minimum cost of all values
+    * that exceeded the current threshold.
     * @return the solution state node, if found, which has the path leading to a solution. Null if no solution.
     */
   protected def search(startNode: Node[S, T]): Option[Node[S, T]] = {
@@ -74,6 +77,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
 
     while (!done) {
       val (newBound, newNode) = expandSearch(currentNode, 0, bound)
+      //println("Expanded bound: " + newBound + "  cost: " + newNode.pathCost + "  depth: " + depth(newNode) + "  ct: " + ct)
       currentNode = newNode
       if (newBound == 0)
         return Some(currentNode)
@@ -86,15 +90,16 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
   }
 
   /**
-    * Process the next node on the priority queue. Adds neighboring nodes to the queue.
-    * @return the solution if it was found
+    * Recursively expand the search from the last frontier node.
+    * Node that we never allow us to visit a node in the path again to avoid cycles.
+    * @return (min, currentNode) where min is the new minimum bound,
+    *         and currentNode is the new node on the path from the startNode.
     */
   private def expandSearch(node: Node[S, T], costToNode: Int, bound: Int): (Int, Node[S, T])= {
     var currentNode = node
-    //println("expanding from " + node.asTransitionList.mkString(", "))
+
     val currentState: S = currentNode.state
-    searchSpace.refresh(currentState, numTries)
-    val estTotalCost = costToNode + currentNode.estimatedTotalCost
+    val estTotalCost = currentNode.estimatedTotalCost
 
     if (estTotalCost > bound)
       return (estTotalCost, currentNode)
@@ -102,26 +107,48 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
       return (0, currentNode) // success
     }
     var min = Int.MaxValue
+    var nbrNodes: Seq[Node[S, T]] = Seq()
     val transitions: Seq[T] = searchSpace.legalTransitions(currentState)
+    var nodeToCost: Map[Node[S, T], Int] = Map()
 
-    for (transition <- transitions) {
-      val nbr: S = searchSpace.transition(currentState, transition)
+    transitions.foreach(trans => {
+      val nbr: S = searchSpace.transition(currentState, trans)
       if (!currentNode.containsStateInPath(nbr)) {
-        val transitionCost = searchSpace.getCost(transition)
+        val transitionCost = searchSpace.getCost(trans)
         val pathCost = currentNode.pathCost + transitionCost
-        val estTotalCost: Int = pathCost + searchSpace.distanceFromGoal(nbr)
-        currentNode = new Node[S, T](nbr, Some(transition), Some(currentNode), pathCost, estTotalCost)
-        numTries += 1
-        val (newBound, newNode) = expandSearch(currentNode, costToNode + transitionCost, bound)
-        currentNode = newNode
-        if (newBound == 0)
-          return (0, currentNode)
-        if (newBound < min)
-          min = newBound
-        currentNode = currentNode.previous.get
+        val estRemainingCost: Int = searchSpace.distanceFromGoal(nbr)
+        val node = new Node[S, T](nbr, Some(trans), Some(currentNode), pathCost, pathCost + estRemainingCost)
+        nbrNodes :+= node
+        nodeToCost += node -> pathCost
       }
+    })
+
+    for (nbrNode <- nbrNodes.sorted) {
+      numTries += 1
+      val (newBound, newNode) = expandSearch(nbrNode, nodeToCost(nbrNode), bound)
+      currentNode = newNode
+      if (newBound == 0)
+        return (0, currentNode)
+      if (newBound < min) {
+        min = newBound
+        searchSpace.refresh(currentState, numTries)
+      }
+      currentNode = currentNode.previous.get // backtrack
     }
-    (min, currentNode)
+
+    assert (currentNode == node)
+    (min, node)
+  }
+
+
+  private def depth(node: Node[S, T]): Int = {
+    var depth = 0
+    var n = node;
+    while (n.previous.isDefined) {
+      depth += 1
+      n = n.previous.get
+    }
+    depth
   }
 
 }

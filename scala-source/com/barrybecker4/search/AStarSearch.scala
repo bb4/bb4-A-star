@@ -112,12 +112,13 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
     for (transition <- transitions) {
       val nbr: S = searchSpace.transition(currentState, transition)
       if (!visited.contains(nbr)) {
-        val estPathCost: Int = pathCost(currentState) + searchSpace.getCost(transition)
-        if (!pathCost.contains(nbr) || estPathCost < pathCost(nbr)) {
-          val estTotalCost: Int = estPathCost + searchSpace.distanceFromGoal(nbr)
+        val transitionCost = searchSpace.getCost(transition)
+        val actPathCost: Int = pathCost(currentState) + transitionCost
+        if (!pathCost.contains(nbr) || actPathCost < pathCost(nbr)) {
+          val estTotalCost: Int = actPathCost + searchSpace.distanceFromGoal(nbr)
           val child: Node[S, T] =
-            new Node[S, T](nbr, Some(transition), Some(currentNode), estPathCost, estTotalCost)
-          pathCost.put(nbr, estPathCost)
+            new Node[S, T](nbr, Some(transition), Some(currentNode), actPathCost, estTotalCost)
+          pathCost.put(nbr, actPathCost)
           openQueue.addOrUpdate(child)
           numTries += 1
         }

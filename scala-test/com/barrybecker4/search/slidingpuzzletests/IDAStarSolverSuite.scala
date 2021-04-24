@@ -12,8 +12,8 @@ class IDAStarSolverSuite extends SolverSuite {
 
   def createSolver(initial: Board): Solver = new IDAStarSolver(initial)
 
-  /* not working yet
+  /* not working within time limit yet
   test("SolveHard") {
-    verifyHardSolved(100)
+    verifyHardSolved(200)
   }*/
 }

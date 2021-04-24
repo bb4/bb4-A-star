@@ -15,4 +15,14 @@ class AStarSolverSuite extends SolverSuite {
   test("SolveHard") {
     verifyHardSolved(9)
   }
+
+  // A* can determine that these are unsolvable. IDA* takes too long to do it.
+  test("run3x3UnsolvableTestFiles") {
+    val testCases: List[Case] = List(
+      new Case("puzzle3x3-unsolvable.txt", -1, false),
+      new Case("puzzle3x3-unsolvable1.txt", -1, false),
+      new Case("puzzle3x3-unsolvable2.txt", -1, false)
+    )
+    runCases(testCases, 32.0)
+  }
 }

@@ -4,8 +4,7 @@
 
 package com.barrybecker4.search.slidingpuzzle
 
-import com.barrybecker4.search.{AStarSearch, IDAStarSearch}
-import com.barrybecker4.search.queue.UpdatablePriorityQueue
+import com.barrybecker4.search.IDAStarSearch
 import com.barrybecker4.search.space.SearchSpace
 
 
