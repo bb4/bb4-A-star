@@ -76,7 +76,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
     var ct = 0
 
     while (!done) {
-      val (newBound, newNode) = expandSearch(currentNode, 0, bound)
+      val (newBound, newNode) = expandSearch(currentNode, bound)
       //println("Expanded bound: " + newBound + "  cost: " + newNode.pathCost + "  depth: " + depth(newNode) + "  ct: " + ct)
       currentNode = newNode
       if (newBound == 0)
@@ -95,7 +95,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
     * @return (min, currentNode) where min is the new minimum bound,
     *         and currentNode is the new node on the path from the startNode.
     */
-  private def expandSearch(node: Node[S, T], costToNode: Int, bound: Int): (Int, Node[S, T])= {
+  private def expandSearch(node: Node[S, T], bound: Int): (Int, Node[S, T])= {
     var currentNode = node
 
     val currentState: S = currentNode.state
@@ -109,7 +109,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
     var min = Int.MaxValue
     var nbrNodes: Seq[Node[S, T]] = Seq()
     val transitions: Seq[T] = searchSpace.legalTransitions(currentState)
-    var nodeToCost: Map[Node[S, T], Int] = Map()
+    searchSpace.refresh(currentState, numTries)
 
     transitions.foreach(trans => {
       val nbr: S = searchSpace.transition(currentState, trans)
@@ -119,19 +119,17 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
         val estRemainingCost: Int = searchSpace.distanceFromGoal(nbr)
         val node = new Node[S, T](nbr, Some(trans), Some(currentNode), pathCost, pathCost + estRemainingCost)
         nbrNodes :+= node
-        nodeToCost += node -> pathCost
       }
     })
 
     for (nbrNode <- nbrNodes.sorted) {
       numTries += 1
-      val (newBound, newNode) = expandSearch(nbrNode, nodeToCost(nbrNode), bound)
+      val (newBound, newNode) = expandSearch(nbrNode, bound)
       currentNode = newNode
       if (newBound == 0)
         return (0, currentNode)
       if (newBound < min) {
         min = newBound
-        searchSpace.refresh(currentState, numTries)
       }
       currentNode = currentNode.previous.get // backtrack
     }
