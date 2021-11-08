@@ -68,12 +68,11 @@ class BoardSuite extends AnyFunSuite with BeforeAndAfter {
 
   test("ApplyTransition") {
     board = new Board(ALMOST_SOLVED_3)
-    val trans1: Transition = new Transition(new Location(2, 1), new Location(1, 1))
+    val trans1: Transition = Transition(Location(2, 1), Location(1, 1))
     var newBoard: Board = board.applyTransition(trans1)
     assertResult(2, "Unexpected hamming distance after trans1") { newBoard.hamming }
-    assertResult("3\n" + " 1  2  3 \n" + " 4  0  6 \n" + " 7  5  8 \n", "Unexpected board after first transition")
-    { newBoard.toString }
-    val trans2: Transition = new Transition(new Location(1, 1), new Location(1, 0))
+    assertResult("3\n" + " 1  2  3 \n" + " 4  0  6 \n" + " 7  5  8 \n") { newBoard.toString }
+    val trans2: Transition = Transition(Location(1, 1), Location(1, 0))
     newBoard = newBoard.applyTransition(trans2)
     assertResult(3, "Unexpected hamming distance after trans2") { newBoard.hamming }
     assertResult("3\n" + " 1  2  3 \n" + " 0  4  6 \n" + " 7  5  8 \n") { newBoard.toString }

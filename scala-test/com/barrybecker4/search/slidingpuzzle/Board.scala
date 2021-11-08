@@ -1,9 +1,8 @@
 // Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search.slidingpuzzle
 
-import java.util.Arrays
-
 import com.barrybecker4.search.Location
+import java.util
 
 
 /**
@@ -60,7 +59,7 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
     * Construct a board from an N-by-N array of blocks
     * @param blocks 0 - N*N blocks. blocks[i][j] = block in row i, column j
     */
-  def this(blocks: Array[Array[Int]]) {
+  def this(blocks: Array[Array[Int]]) = {
     this(Board.makeBlocks(blocks))
   }
 
@@ -108,13 +107,13 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
 
   override def equals(other: Any): Boolean = {
     other match {
-      case other: Board => hamming == other.hamming && Arrays.equals(blocks, other.blocks)
+      case other: Board => hamming == other.hamming && util.Arrays.equals(blocks, other.blocks)
       case _ => false
     }
   }
 
   override def hashCode: Int = {
-    if (hash < 0) hash = Arrays.hashCode(blocks)
+    if (hash < 0) hash = util.Arrays.hashCode(blocks)
     hash
   }
 
