@@ -5,6 +5,7 @@
 .idea/*
 *.iml
 *.ipr
+*.iws
 
 # Scala-IDE specific
 .scala_dependencies
