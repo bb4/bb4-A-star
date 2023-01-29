@@ -4,16 +4,16 @@ buildscript {
         maven { url "https://oss.sonatype.org/content/repositories/releases" }
     }
     dependencies {
-        classpath 'com.barrybecker4:bb4-gradle:1.7'
+        classpath 'com.barrybecker4:bb4-gradle:1.8-SNAPSHOT'
     }
 }
 
 plugins {
-    id "com.github.maiflai.scalatest" version "0.31" // needed to run scala tests
+    id "com.github.maiflai.scalatest" version "0.32" // needed to run scala tests
 }
 description = 'A-star search algorithm'
 group = 'com.barrybecker4'
-version = '1.7'
+version = '1.8-SNAPSHOT'
 ext {
     archivesBaseName = 'bb4-A-star'
     mainClass = 'com.barrybecker4.search.AStarSearch'
