@@ -8,7 +8,8 @@ import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
 object AStarSearch {
-  /** Small demo of A* on [[TrivialSearchSpace]] (also referenced as main class from the build). */
+  /** Small demo of A* on [[com.barrybecker4.search.space.TrivialSearchSpace]]
+    * (also referenced as main class from the build). */
   def main(args: Array[String]): Unit = {
     val search = new AStarSearch[String, (String, String)](new TrivialSearchSpace())
     val path = search.solve.get
