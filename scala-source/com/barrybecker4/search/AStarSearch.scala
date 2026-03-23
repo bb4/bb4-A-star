@@ -7,11 +7,13 @@ import com.barrybecker4.search.space.{SearchSpace, TrivialSearchSpace}
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 
-object AStarSearch extends App {
-  // A trivial example of how the search works
-  val search = new AStarSearch[String, (String, String)](new TrivialSearchSpace())
-  val path = search.solve.get
-  println("path = " + path.mkString(", "))
+object AStarSearch {
+  /** Small demo of A* on [[TrivialSearchSpace]] (also referenced as main class from the build). */
+  def main(args: Array[String]): Unit = {
+    val search = new AStarSearch[String, (String, String)](new TrivialSearchSpace())
+    val path = search.solve.get
+    println("path = " + path.mkString(", "))
+  }
 }
 
 /**
@@ -46,36 +48,45 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
   private var numTries: Long = 0L
 
   /** States that have been visited, but they may be replaced if we can reach them by a better path */
-  private[search] var visited: Map[S, Node[S, T]] = new HashMap[S, Node[S, T]]
+  private[search] var visited: Map[S, Node[S, T]] = HashMap.empty
 
   /** Enables stopping the search via method call */
   private var stopped: Boolean = false
-
 
   /**
     * @return a sequence of transitions leading from the initial state to the goal state. None if no path found.
     */
   def solve: Option[Seq[T]] = {
     val startTime: Long = System.currentTimeMillis
+    resetSearchState()
     initialize()
     val solutionState: Option[Node[S, T]] = search()
     val pathToSolution: Option[Seq[T]] = getPathToSolution
-    val solutionIfExists: Option[S] = if (solutionState.isDefined) Some(solutionState.get.state) else None
+    val solutionIfExists: Option[S] = solutionState.map(_.state)
 
     val elapsedTime: Long = System.currentTimeMillis - startTime
     searchSpace.finalRefresh(pathToSolution, solutionIfExists, numTries, elapsedTime)
     pathToSolution
   }
 
-  private def initialize(): Unit = {
+  /** Clears frontier and bookkeeping so [[solve]] can be called again on the same instance. */
+  private def resetSearchState(): Unit = {
     stopped = false
+    solution = None
+    numTries = 0L
+    pathCost.clear()
+    visited = HashMap.empty
+    openQueue.clear()
+  }
+
+  private def initialize(): Unit = {
     val startingState: S = searchSpace.initialState
     val startNode: Node[S, T] = new Node[S, T](startingState, searchSpace.distanceFromGoal(startingState))
     openQueue.add(startNode)
     pathCost.put(startingState, 0)
   }
 
-  def getPathToSolution: Option[Seq[T]] = if (solution.isDefined) Some(solution.get.asTransitionList) else None
+  def getPathToSolution: Option[Seq[T]] = solution.map(_.asTransitionList)
 
   /** Tell the search to stop */
   def stop(): Unit =
@@ -83,47 +94,60 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
 
   /**
     * Best first search for a solution.
-    * @return the solution state node, if found, which has the path leading to a solution. Null if no solution.
+    * @return the solution state node, if found, which has the path leading to a solution. None if no solution.
     */
   protected def search(): Option[Node[S, T]] = {
-    while (!openQueue.isEmpty && !stopped) {
-      val solutionNode: Option[Node[S, T]] = processNext(openQueue.pop)
-      if (solutionNode.isDefined) return solutionNode
+    var found: Option[Node[S, T]] = None
+    while (found.isEmpty && !openQueue.isEmpty && !stopped) {
+      processNext(openQueue.pop).foreach { sol => found = Some(sol) }
     }
-    None // failed to find a solution
+    found
   }
 
   /**
     * Process the next node on the priority queue. Adds neighboring nodes to the queue.
-    * @return the solution if it was found
+    * @return the solution node if it was found
     */
   private def processNext(currentNode: Node[S, T]): Option[Node[S, T]] = {
     val currentState: S = currentNode.state
     searchSpace.refresh(currentState, numTries)
-    if (searchSpace.isGoal(currentState)) {
-      // the extra check for a better path is needed when running concurrently
-      if (solution.isEmpty || currentNode.pathCost < solution.get.pathCost)
-        solution = Some(currentNode)
-      return Some(currentNode) // success
+    goalCheck(currentNode).orElse {
+      visitAndExpand(currentState, currentNode)
+      None
     }
-    visited += (currentState -> currentNode)
-    val transitions: Seq[T] = searchSpace.legalTransitions(currentState)
+  }
 
-    for (transition <- transitions) {
-      val nbr: S = searchSpace.transition(currentState, transition)
-      if (!visited.contains(nbr)) {
-        val transitionCost = searchSpace.getCost(transition)
-        val actPathCost: Int = pathCost(currentState) + transitionCost
-        if (!pathCost.contains(nbr) || actPathCost < pathCost(nbr)) {
-          val estTotalCost: Int = actPathCost + searchSpace.distanceFromGoal(nbr)
-          val child: Node[S, T] =
-            new Node[S, T](nbr, Some(transition), Some(currentNode), actPathCost, estTotalCost)
-          pathCost.put(nbr, actPathCost)
-          openQueue.addOrUpdate(child)
-          numTries += 1
-        }
-      }
+  private def goalCheck(currentNode: Node[S, T]): Option[Node[S, T]] = {
+    val currentState = currentNode.state
+    Option.when(searchSpace.isGoal(currentState)) {
+      // the extra check for a better path is needed when running concurrently
+      if (solution.forall(s => currentNode.pathCost < s.pathCost))
+        solution = Some(currentNode)
+      currentNode
     }
-    None
+  }
+
+  private def visitAndExpand(currentState: S, currentNode: Node[S, T]): Unit = {
+    visited = visited.updated(currentState, currentNode)
+    val transitions: Seq[T] = searchSpace.legalTransitions(currentState)
+    for (transition <- transitions)
+      considerNeighbor(currentState, currentNode, transition)
+  }
+
+  private def considerNeighbor(currentState: S, currentNode: Node[S, T], transition: T): Unit = {
+    val nbr: S = searchSpace.transition(currentState, transition)
+    if (visited.contains(nbr)) return
+
+    val transitionCost = searchSpace.getCost(transition)
+    val actPathCost: Int = pathCost(currentState) + transitionCost
+    val prevBest = pathCost.get(nbr)
+    if (prevBest.exists(_ <= actPathCost)) return
+
+    val estTotalCost: Int = actPathCost + searchSpace.distanceFromGoal(nbr)
+    val child: Node[S, T] =
+      new Node[S, T](nbr, Some(transition), Some(currentNode), actPathCost, estTotalCost)
+    pathCost.put(nbr, actPathCost)
+    openQueue.addOrUpdate(child)
+    numTries += 1
   }
 }

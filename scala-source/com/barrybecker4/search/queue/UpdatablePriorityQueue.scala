@@ -34,4 +34,7 @@ trait UpdatablePriorityQueue[S, T] {
 
   /** @return true if no elements in the queue */
   def isEmpty: Boolean
+
+  /** Removes all elements from the queue (for example before a new [[com.barrybecker4.search.AStarSearch#solve]]). */
+  def clear(): Unit
 }

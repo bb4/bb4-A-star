@@ -26,5 +26,10 @@ abstract class AbstractSearchSpace[S, T](val initialState: S) extends SearchSpac
     // nothing by default
   }
 
+  /**
+    * Default applies a transition from the fixed [[initialState]] (useful for simple demos).
+    * Search implementations in this library do not call this; override in UI clients if needed.
+    */
   override def animateTransition(trans: T): S = this.transition(initialState, trans)
 }
+

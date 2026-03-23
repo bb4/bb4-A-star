@@ -24,7 +24,7 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
 
     q.pop
     assertResult(1) { q.size }
-    assertResult(false) {q.isEmpty}
+    assertResult(false) { q.isEmpty }
   }
 
   test("pop from queue") {
@@ -38,7 +38,13 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
     assertResult(1) { q.size }
     q.pop
     assertResult(0) { q.size }
-    assertResult(true) {q.isEmpty}
+    assertResult(true) { q.isEmpty }
+  }
+
+  test("peek on empty queue throws") {
+    assertThrows[NoSuchElementException] {
+      q.peek
+    }
   }
 
   test("Error if try to pop from empty queue") {
@@ -46,7 +52,7 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
     q.add(node1)
     q.pop
 
-    assertThrows[AssertionError] {
+    assertThrows[NoSuchElementException] {
       q.pop
     }
   }

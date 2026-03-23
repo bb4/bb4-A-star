@@ -3,6 +3,8 @@ package com.barrybecker4.search
 
 import com.barrybecker4.search.space.SearchSpace
 
+import scala.util.boundary
+import scala.util.boundary.break
 
 /**
   * Sequential search strategy that uses the IDA* search algorithm.
@@ -31,9 +33,8 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
 
   private var solution: Option[Node[S, T]] = None
 
-  /** If the depth is greater than this, we will probably never find a solution */
-  private val MAX_DEPTH = 42
-
+  /** Safety cap on IDA* bound iterations (each iteration raises the cost threshold). */
+  private val MaxBoundIterations: Int = 42
 
   /**
     * @return a sequence of transitions leading from the initial state to the goal state. None if no path found.
@@ -41,7 +42,8 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
   def solve: Option[Seq[T]] = {
     val startTime: Long = System.currentTimeMillis
 
-    stopped = false
+    resetSearchState()
+
     val startingState: S = searchSpace.initialState
     val startNode: Node[S, T] = new Node[S, T](startingState, searchSpace.distanceFromGoal(startingState))
 
@@ -50,13 +52,18 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
 
     val elapsedTime: Long = System.currentTimeMillis - startTime
 
-    val solutionIfExists: Option[S] = if (solution.isDefined) Some(solution.get.state) else None
+    val solutionIfExists: Option[S] = solution.map(_.state)
     searchSpace.finalRefresh(pathToSolution, solutionIfExists, numTries, elapsedTime)
     pathToSolution
   }
 
-  def getPathToSolution: Option[Seq[T]] =
-    if (solution.isDefined) Some(solution.get.asTransitionList) else None
+  private def resetSearchState(): Unit = {
+    stopped = false
+    solution = None
+    numTries = 0L
+  }
+
+  def getPathToSolution: Option[Seq[T]] = solution.map(_.asTransitionList)
 
   /** Tell the search to stop */
   def stop(): Unit =
@@ -67,86 +74,75 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
     * Continue to expand an optimal patch from the startNode using iterative deepening of the search in the tree.
     * At each iteration, the threshold used for the next iteration is the minimum cost of all values
     * that exceeded the current threshold.
-    * @return the solution state node, if found, which has the path leading to a solution. Null if no solution.
+    * @return the solution state node, if found, which has the path leading to a solution. None if no solution.
     */
   protected def search(startNode: Node[S, T]): Option[Node[S, T]] = {
     var bound = startNode.estimatedTotalCost
     var currentNode = startNode
+    var iteration = 0
     var done = false
-    var ct = 0
+    var result: Option[Node[S, T]] = None
 
-    while (!done) {
+    while !done && !stopped && result.isEmpty do
       val (newBound, newNode) = expandSearch(currentNode, bound)
-      //println("Expanded bound: " + newBound + "  cost: " + newNode.pathCost + "  depth: " + depth(newNode) + "  ct: " + ct)
       currentNode = newNode
-      if (newBound == 0)
-        return Some(currentNode)
-      if (newBound == Int.MaxValue || ct > MAX_DEPTH)
+      if newBound == 0 then
+        result = Some(currentNode)
+      else if newBound == Int.MaxValue || iteration > MaxBoundIterations then
         done = true
-      ct += 1
-      bound = newBound
-    }
-    None
+      else
+        iteration += 1
+        bound = newBound
+    end while
+
+    result
   }
 
   /**
     * Recursively expand the search from the last frontier node.
-    * Node that we never allow us to visit a node in the path again to avoid cycles.
+    * Note that we never allow us to visit a node in the path again to avoid cycles.
     * @return (min, currentNode) where min is the new minimum bound,
     *         and currentNode is the new node on the path from the startNode.
     */
-  private def expandSearch(node: Node[S, T], bound: Int): (Int, Node[S, T])= {
-    var currentNode = node
+  private def expandSearch(node: Node[S, T], bound: Int): (Int, Node[S, T]) =
+    boundary[(Int, Node[S, T])]:
+      if stopped then break((Int.MaxValue, node))
 
-    val currentState: S = currentNode.state
-    val estTotalCost = currentNode.estimatedTotalCost
+      val estTotalCost = node.estimatedTotalCost
+      if estTotalCost > bound then break((estTotalCost, node))
 
-    if (estTotalCost > bound)
-      return (estTotalCost, currentNode)
-    if (searchSpace.isGoal(currentState)) {
-      return (0, currentNode) // success
-    }
-    var min = Int.MaxValue
-    var nbrNodes: Seq[Node[S, T]] = Seq()
-    val transitions: Seq[T] = searchSpace.legalTransitions(currentState)
-    searchSpace.refresh(currentState, numTries)
+      val currentState: S = node.state
+      if searchSpace.isGoal(currentState) then break((0, node))
 
-    transitions.foreach(trans => {
+      val transitions: Seq[T] = searchSpace.legalTransitions(currentState)
+      searchSpace.refresh(currentState, numTries)
+      val nbrNodes = buildSortedNeighborNodes(currentState, node, transitions)
+
+      var min = Int.MaxValue
+      var currentNode = node
+      for nbrNode <- nbrNodes do
+        if stopped then break((Int.MaxValue, currentNode))
+        numTries += 1
+        val (newBound, newNode) = expandSearch(nbrNode, bound)
+        currentNode = newNode
+        if newBound == 0 then break((0, currentNode))
+        if newBound < min then min = newBound
+        currentNode = currentNode.previous.get // backtrack
+      end for
+
+      assert(currentNode == node)
+      (min, node)
+
+  private def buildSortedNeighborNodes(currentState: S, currentNode: Node[S, T], transitions: Seq[T]): Seq[Node[S, T]] = {
+    val builders = transitions.flatMap { trans =>
       val nbr: S = searchSpace.transition(currentState, trans)
-      if (!currentNode.containsStateInPath(nbr)) {
+      Option.when(!currentNode.containsStateInPath(nbr)) {
         val transitionCost = searchSpace.getCost(trans)
         val pathCost = currentNode.pathCost + transitionCost
         val estRemainingCost: Int = searchSpace.distanceFromGoal(nbr)
-        val node = new Node[S, T](nbr, Some(trans), Some(currentNode), pathCost, pathCost + estRemainingCost)
-        nbrNodes :+= node
+        new Node[S, T](nbr, Some(trans), Some(currentNode), pathCost, pathCost + estRemainingCost)
       }
-    })
-
-    for (nbrNode <- nbrNodes.sorted) {
-      numTries += 1
-      val (newBound, newNode) = expandSearch(nbrNode, bound)
-      currentNode = newNode
-      if (newBound == 0)
-        return (0, currentNode)
-      if (newBound < min) {
-        min = newBound
-      }
-      currentNode = currentNode.previous.get // backtrack
     }
-
-    assert (currentNode == node)
-    (min, node)
+    builders.sorted
   }
-
-
-  private def depth(node: Node[S, T]): Int = {
-    var depth = 0
-    var n = node;
-    while (n.previous.isDefined) {
-      depth += 1
-      n = n.previous.get
-    }
-    depth
-  }
-
 }

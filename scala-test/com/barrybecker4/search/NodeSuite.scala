@@ -44,11 +44,12 @@ class NodeSuite extends AnyFunSuite {
   }
 
   test("compareTo state") {
-    assertResult(-18) { nextNode.compareTo(prevNode) }
-    assertResult(18) { prevNode.compareTo(nextNode) }
-    assertResult(0) { node.compareTo(node) }
-    assertResult(-8) { node.compareTo(prevNode) }
-    assertResult(8) { prevNode.compareTo(node) }
+    // Uses total-cost ordering (see [[Node.compareTo]]); sign is what matters for heaps, not the magnitude.
+    assert(nextNode.compareTo(prevNode) < 0)
+    assert(prevNode.compareTo(nextNode) > 0)
+    assert(node.compareTo(node) == 0)
+    assert(node.compareTo(prevNode) < 0)
+    assert(prevNode.compareTo(node) > 0)
   }
 
 }

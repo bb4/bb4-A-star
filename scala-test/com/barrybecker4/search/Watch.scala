@@ -1,10 +1,14 @@
 // Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search
 
-class Watch() {
+import java.util.concurrent.TimeUnit
 
-  private val start: Long = System.currentTimeMillis
+/** Elapsed-time helper using a monotonic clock (nanos), suitable for performance assertions in tests. */
+class Watch private (private val startNanos: Long) {
+
+  def this() = this(System.nanoTime())
 
   /** @return the elapsed time (in seconds) since this object was created. */
-  def getElapsedSeconds: Double = (System.currentTimeMillis - start) / 1000.0
+  def getElapsedSeconds: Double =
+    TimeUnit.NANOSECONDS.toMillis(System.nanoTime - startNanos) / 1000.0
 }

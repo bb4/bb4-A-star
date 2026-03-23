@@ -1,3 +1,4 @@
+// Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search.space
 
 import com.barrybecker4.search.Refreshable
@@ -28,10 +29,11 @@ trait SearchSpace[S, T] extends Refreshable[S, T] {
   /** @return the state (immutable) that you get after applying the specified transition. */
   def transition(state: S, transition: T): S
 
-  /** Add the state to the "seen" set of states, if not already seen.
+  /** Optional helper for algorithms that track a mutable seen-set (not used by [[com.barrybecker4.search.AStarSearch]]
+    * or [[com.barrybecker4.search.IDAStarSearch]] in this library). Default: [[AbstractSearchSpace#alreadySeen]].
     *
     * @param state to check
-    * @param seen  Map of seen states.
+    * @param seen  mutable set of seen states
     * @return true if the specified state was already seen (possibly taking into account symmetries).
     */
   def alreadySeen(state: S, seen: mutable.Set[S]): Boolean

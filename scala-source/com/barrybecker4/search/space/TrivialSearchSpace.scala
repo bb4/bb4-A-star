@@ -9,17 +9,26 @@ import scala.collection.mutable
   */
 class TrivialSearchSpace extends SearchSpace[String, (String, String)] {
 
-    private val nextStates = Map("start" -> "intermediate", "intermediate" -> "goal")
+  private val nextStates = Map("start" -> "intermediate", "intermediate" -> "goal")
 
-    override def initialState: String = "start"
-    override def isGoal(state: String): Boolean = state == "goal"
-    override def legalTransitions(state: String): Seq[(String, String)] = Seq((state, nextStates(state)))
-    override def transition(state: String, transition: (String, String)): String = transition._2
-    override def alreadySeen(state: String, seen: mutable.Set[String]): Boolean = false
-    override def distanceFromGoal(state: String): Int = 1
-    override def getCost(transition: (String, String)): Int = 1
-    override def refresh(state: String, numTries: Long): Unit = {}
-    override def finalRefresh(path: Option[Seq[(String, String)]],
-                              state: Option[String], numTries: Long, elapsedMillis: Long): Unit = {}
-    override def animateTransition(trans: (String, String)): String = trans._2
+  override def initialState: String = "start"
+
+  override def isGoal(state: String): Boolean = state == "goal"
+
+  override def legalTransitions(state: String): Seq[(String, String)] = Seq((state, nextStates(state)))
+
+  override def transition(state: String, transition: (String, String)): String = transition._2
+
+  override def alreadySeen(state: String, seen: mutable.Set[String]): Boolean = false
+
+  override def distanceFromGoal(state: String): Int = 1
+
+  override def getCost(transition: (String, String)): Int = 1
+
+  override def refresh(state: String, numTries: Long): Unit = ()
+
+  override def finalRefresh(path: Option[Seq[(String, String)]],
+                            state: Option[String], numTries: Long, elapsedMillis: Long): Unit = ()
+
+  override def animateTransition(trans: (String, String)): String = trans._2
 }

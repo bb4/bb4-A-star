@@ -20,7 +20,7 @@ import java.util
   * equals is slow. IOW first check the hamming value, if that does not match, it cannot be equal. If it does match
   * resort to slower comparison.
   * - When creating neighbors I use the fact that there is going to be an incremental change to the manhattan distance
-  * and do not recompute it from scratch. Hint: use a private constructor, that takes the manhattan distance as a param.
+  * and do not recompute it from scratch. Hint: use a private constructor, that takes the distance as a param.
   * - Sorted the neighbors so that the most promising is delivered first. Gave a modest performance boost because
   * fewer nodes were then added to the queue in the long run.
   * - Used System.arraycopy(src, 0, target, 0,length); to copy the internal blocks array.
@@ -129,15 +129,8 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
   }
 
   def getNeighborTransitions: List[Transition] = {
-    var neighbors: List[Transition] = Nil
     val spacePos: Location = getSpacePosition
-    val i: Int = spacePos.row
-    val j: Int = spacePos.col
-    if (i > 0) neighbors :+= Transition(spacePos, Location(i - 1, j))
-    if (i < side - 1) neighbors :+= Transition(spacePos, Location(i + 1, j))
-    if (j > 0) neighbors :+= Transition(spacePos, Location(i, j - 1))
-    if (j < side - 1) neighbors :+= Transition(spacePos, Location(i, j + 1))
-    neighbors
+    neighborTileLocations(spacePos).map(tile => Transition(spacePos, tile))
   }
 
   def applyTransition(trans: Transition): Board = {
@@ -150,17 +143,23 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
     * @return all neighboring boards. There are at most 4.
     */
   def neighbors: Iterable[Board] = {
-    var neighbors: List[Board] = Nil
     val spacePos: Location = getSpacePosition
     val i: Int = spacePos.row
     val j: Int = spacePos.col
-    if (i > 0) neighbors  :+= move(i, j, i - 1, j)
-    if (i < side - 1) neighbors :+= move(i, j, i + 1, j)
-    if (j > 0) neighbors :+= move(i, j, i, j - 1)
-    if (j < side - 1) neighbors :+= move(i, j, i, j + 1)
+    val boards = neighborTileLocations(spacePos).map(loc => move(i, j, loc.row, loc.col))
+    boards.sortBy(_.manhattanDistance)
+  }
 
-    neighbors = neighbors.sortBy(_.manhattanDistance)
-    neighbors
+  /** Adjacent tile positions that can slide into the empty cell (at most four). */
+  private def neighborTileLocations(spacePos: Location): List[Location] = {
+    val i: Int = spacePos.row
+    val j: Int = spacePos.col
+    val b = List.newBuilder[Location]
+    if (i > 0) b += Location(i - 1, j)
+    if (i < side - 1) b += Location(i + 1, j)
+    if (j > 0) b += Location(i, j - 1)
+    if (j < side - 1) b += Location(i, j + 1)
+    b.result()
   }
 
   private def move(oldSpaceRow: Int, oldSpaceCol: Int, newSpaceRow: Int, newSpaceCol: Int): Board = {
@@ -179,13 +178,9 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
     * @return row column coordinates of the space position
     */
   private def getSpacePosition: Location = {
-    var i: Byte = 0
-    for (i <- 0 until side) {
-      for (j <- 0 until side) {
-        if (blocks(i * side + j) == 0) return Location(i, j)
-      }
-    }
-    throw new IllegalStateException("No space position!")
+    val idx = blocks.indexWhere(_ == 0)
+    if (idx < 0) throw new IllegalStateException("No space position!")
+    Location(idx / side, idx % side)
   }
 
   private def swap(row1: Int, col1: Int, row2: Int, col2: Int, b: Array[Byte]): Unit = {

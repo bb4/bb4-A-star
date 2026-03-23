@@ -22,7 +22,7 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
   test("Solve8") {
     val initial: Board = reader.read("puzzle08.txt")
     solver = createSolver(initial)
-    assertResult(8, "Unexpected number of moves for puzzle8.txt") {solver.moves}
+    assertResult(8, "Unexpected number of moves for puzzle8.txt") { solver.moves }
     assertResult(true, "Unexpectedly not solvable") { solver.isSolvable }
   }
 
@@ -54,11 +54,10 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
     val testNum: Int = 11
     val file: String = "puzzle" + testNum + ".txt"
     val initial: Board = reader.read(file)
-    val timer: Watch = new Watch
-    solver = createSolver(initial)
-    val elapsed: Double = timer.getElapsedSeconds
+    val (elapsed, s) = timedSolve(initial)
+    solver = s
     System.out.println("elapsed = " + elapsed + " seconds.")
-    assertResult( testNum, "Unexpected number of moves for " + file) { solver.moves }
+    assertResult(testNum, "Unexpected number of moves for " + file) { solver.moves }
     assert(solver.isSolvable, file + " unexpectedly not solvable")
     assert(elapsed < 10.0, "Took too long " + elapsed)
   }
@@ -66,9 +65,8 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
   def verifyHardSolved(timeLimit: Double = 10.0): Unit = {
     val file: String = "puzzle4x4-hard1.txt"
     val initial: Board = reader.read(file)
-    val timer: Watch = new Watch
-    solver = createSolver(initial)
-    val elapsed: Double = timer.getElapsedSeconds
+    val (elapsed, s) = timedSolve(initial)
+    solver = s
     System.out.println("elapsed = " + elapsed + " seconds.")
     assertResult(38, "Unexpected number of moves for " + file) { solver.moves }
     assertResult(true, file + " unexpectedly not solvable") { solver.isSolvable }
@@ -113,12 +111,18 @@ abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
     bldr.toString
   }
 
+  /** Runs [[createSolver]] and returns elapsed seconds plus the solver instance. */
+  private def timedSolve(initial: Board): (Double, Solver) = {
+    val timer: Watch = new Watch
+    val s = createSolver(initial)
+    (timer.getElapsedSeconds, s)
+  }
+
   private def doRun(testNum: Int, timeLimit: Double): Unit = {
     val file: String = "puzzle" + testNum + ".txt"
     val initial: Board = reader.read(file)
-    val timer: Watch = new Watch
-    solver = createSolver(initial)
-    val elapsed: Double = timer.getElapsedSeconds
+    val (elapsed, s) = timedSolve(initial)
+    solver = s
     System.out.println("elapsed = " + elapsed + " seconds.")
     assertResult(testNum, "Unexpected number of moves for " + file) { solver.moves }
     assert(solver.isSolvable, file + " unexpectedly not solvable")

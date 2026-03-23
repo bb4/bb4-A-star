@@ -1,6 +1,8 @@
 // Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search
 
+import scala.annotation.tailrec
+
 /**
   * Represents a state and how we got to it from the last state. Immutable
   * Link node for a state in the global search space.
@@ -28,7 +30,8 @@ class Node[S, T](val state: S, val transition: Option[T] = None,
     this(initialState, estimatedTotalCost = estFutureCost)
   }
 
-  def compareTo(otherNode: Node[S, T]): Int = estimatedTotalCost - otherNode.estimatedTotalCost
+  def compareTo(otherNode: Node[S, T]): Int =
+    Integer.compare(estimatedTotalCost, otherNode.estimatedTotalCost)
 
   override def equals(other: Any): Boolean = {
     other match {
@@ -41,28 +44,25 @@ class Node[S, T](val state: S, val transition: Option[T] = None,
 
   /** @return a list of nodes from the start state to this state. */
   def asTransitionList: Seq[T] = {
-    var solution: List[T] = List()
-    var node: Node[S, T] = this
-    while (node.transition.isDefined) {
-      solution = node.transition.get +: solution
-      node = node.previous.get
-    }
-    solution
+    @tailrec
+    def build(n: Node[S, T], acc: List[T]): List[T] =
+      n.transition match {
+        case Some(t) => build(n.previous.get, t :: acc)
+        case None => acc
+      }
+    build(this, Nil)
   }
 
   /** @return true if state is in the path terminated by this node */
   def containsStateInPath(state: S): Boolean = {
-    var currentNode = this
-    if (currentNode.state == state) {
-      return true
-    }
-    while (currentNode.previous.isDefined) {
-      currentNode = currentNode.previous.get
-      if (currentNode.state == state) {
-        return true
+    @tailrec
+    def walk(n: Node[S, T]): Boolean =
+      if n.state == state then true
+      else n.previous match {
+        case Some(p) => walk(p)
+        case None => false
       }
-    }
-    false
+    walk(this)
   }
 
   override def toString: String = "[" + state + ", pathCost=" + pathCost + " totalCost=" + estimatedTotalCost + "]"

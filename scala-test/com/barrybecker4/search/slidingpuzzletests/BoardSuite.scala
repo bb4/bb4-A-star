@@ -89,6 +89,12 @@ class BoardSuite extends AnyFunSuite with BeforeAndAfter {
     assertResult(4, "Unexpected num neighbors for top left") { getSize(board.neighbors) }
   }
 
+  test("neighbors are ordered by non-decreasing Manhattan distance") {
+    board = new Board(RANDOM_BOARD)
+    val manhattans = board.neighbors.map(_.manhattanDistance).toList
+    assert(manhattans == manhattans.sorted, "neighbors should be sorted by manhattan distance")
+  }
+
   test("FindTopLeftNeighbors") {
     board = new Board(SPACE_TOP_LEFT)
     assertResult("List(3\n" + " 4  2  3 \n" + " 0  5  6 \n" + " 7  1  8 \n" + ", 3\n" + " 2  0  3 \n" + " 4  5  6 \n" + " 7  1  8 \n" + ")") {

@@ -39,7 +39,7 @@ object HeapPriorityQueue {
   * T represents a transition from one state to the next.
   */
 class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAULT_INITIAL_CAPACITY,
-                              val comparator: Comparator[_ >: Node[S, T]] = null)
+                              val comparator: Comparator[? >: Node[S, T]] = null)
   extends UpdatablePriorityQueue[S, T] {
 
   /** Priority queue represented as a balanced binary heap.
@@ -70,8 +70,9 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
   }
 
   def pop: Node[S, T] = {
-    val minNode: Node[S, T] = this.peek
-    this.removeAt(0)
+    if _size == 0 then throw new NoSuchElementException("priority queue is empty")
+    val minNode: Node[S, T] = queue(0)
+    removeAt(0)
     minNode
   }
 
@@ -91,8 +92,9 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     * First remove the last put where the removed one was.
     * Then shift it up.
     */
-  private def removeAt(i: Int): Unit =  {
-    assert(i >= 0 && i < size)
+  private def removeAt(i: Int): Unit = {
+    if i < 0 || i >= _size then
+      throw new IndexOutOfBoundsException(s"removeAt($i) with size ${_size}")
     _size -= 1
     val s: Int = _size
     val removed: Node[S, T] = queue(i)
@@ -125,7 +127,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
   }
 
   def peek: Node[S, T] = {
-    if (size == 0) return null
+    if _size == 0 then throw new NoSuchElementException("priority queue is empty")
     queue(0)
   }
 
