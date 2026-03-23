@@ -1,24 +1,13 @@
-buildscript {
-    repositories {
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/"}
-        maven { url "https://oss.sonatype.org/content/repositories/releases" }
-    }
-    dependencies {
-        classpath 'com.barrybecker4:bb4-gradle:1.8-SNAPSHOT'
-    }
+plugins {
+    id 'com.barrybecker4.bb4.scala-library' version '2.0-SNAPSHOT'
+    id 'com.barrybecker4.bb4.publish' version '2.0-SNAPSHOT'
 }
 
-plugins {
-    id "com.github.maiflai.scalatest" version "0.32" // needed to run scala tests
-}
 description = 'A-star search algorithm'
 group = 'com.barrybecker4'
-version = '1.8-SNAPSHOT'
-ext {
-    archivesBaseName = 'bb4-A-star'
-    mainClass = 'com.barrybecker4.search.AStarSearch'
+version = '2.0-SNAPSHOT'
+
+bb4 {
+    archivesBaseName.set('bb4-A-star')
+    mainClass.set('com.barrybecker4.search.AStarSearch')
 }
-
-apply from: project.buildscript.classLoader.getResource('bb4.gradle').toURI()
-apply from: project.buildscript.classLoader.getResource('bb4-publish.gradle').toURI()
-

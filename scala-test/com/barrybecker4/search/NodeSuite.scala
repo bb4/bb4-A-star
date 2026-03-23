@@ -1,6 +1,5 @@
 package com.barrybecker4.search
 
-import org.junit.Assert.{assertFalse, assertTrue}
 import org.scalatest.funsuite.AnyFunSuite
 
 class NodeSuite extends AnyFunSuite {
@@ -35,13 +34,13 @@ class NodeSuite extends AnyFunSuite {
   }
 
   test("containsStateInPath") {
-    assertTrue(nextNode.containsStateInPath(nextState))
-    assertTrue(nextNode.containsStateInPath(state))
-    assertTrue(nextNode.containsStateInPath(prevState))
+    assert(nextNode.containsStateInPath(nextState))
+    assert(nextNode.containsStateInPath(state))
+    assert(nextNode.containsStateInPath(prevState))
   }
 
   test("does not containsStateInPath") {
-    assertFalse(nextNode.containsStateInPath(otherState))
+    assert(!nextNode.containsStateInPath(otherState))
   }
 
   test("compareTo state") {

@@ -14,3 +14,7 @@
 .idea/
 build/
 /gradle-app.setting
+
+# VS Code / Metals (local editor & BSP)
+.vscode/settings.json
+.metals/
