@@ -20,10 +20,13 @@ import scala.util.boundary.break
   * and do not recompute it from scratch. Hint: use a private constructor, that takes the distance as a param.
   * - Sort the neighbors so that the most promising is delivered first.
   *
-  * @param searchSpace the global search space containing initial and goal states.
-  * @author Barry Becker
-  */
-class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[S, T] {
+ * @param searchSpace          the global search space containing initial and goal states.
+ * @param maxBoundIterations   max number of times the cost bound is raised before giving up;
+ *                             default is large enough for typical puzzles (the previous fixed cap of 42 was too low).
+ * @author Barry Becker
+ */
+class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterations: Int = 1_000_000)
+    extends ISearcher[S, T] {
 
   /** Number of steps that it took to find solution */
   private var numTries: Long = 0L
@@ -32,9 +35,6 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
   private var stopped: Boolean = false
 
   private var solution: Option[Node[S, T]] = None
-
-  /** Safety cap on IDA* bound iterations (each iteration raises the cost threshold). */
-  private val MaxBoundIterations: Int = 42
 
   /**
     * @return a sequence of transitions leading from the initial state to the goal state. None if no path found.
@@ -88,7 +88,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T]) extends ISearcher[
       currentNode = newNode
       if newBound == 0 then
         result = Some(currentNode)
-      else if newBound == Int.MaxValue || iteration > MaxBoundIterations then
+      else if newBound == Int.MaxValue || iteration > maxBoundIterations then
         done = true
       else
         iteration += 1
