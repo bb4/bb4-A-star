@@ -1,10 +1,11 @@
 // Copyright by Barry G. Becker, 2017. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search.slidingpuzzle
 
+import scala.compiletime.uninitialized
 
 trait Solver {
 
-  protected var solutionTransitions: Option[Seq[Transition]] = _
+  protected var solutionTransitions: Option[Seq[Transition]] = uninitialized
 
 
   /** @return true if the initial board is solvable */

@@ -5,13 +5,14 @@ import com.barrybecker4.search.Watch
 import com.barrybecker4.search.slidingpuzzle.{Board, BoardReader, Solver}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.BeforeAndAfter
+import scala.compiletime.uninitialized
 
 /**
   * @author Barry Becker
   */
 abstract class SolverSuite extends AnyFunSuite with BeforeAndAfter {
-  protected var solver: Solver = _
-  protected var reader: BoardReader = _
+  protected var solver: Solver = uninitialized
+  protected var reader: BoardReader = uninitialized
 
   before {
     reader = new BoardReader("cases/")

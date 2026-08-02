@@ -4,6 +4,7 @@ package com.barrybecker4.search
 import com.barrybecker4.search.space.StubSearchSpace
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
+import scala.compiletime.uninitialized
 
 /**
   * @author Barry Becker
@@ -11,7 +12,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class AStarSearchSuite extends AnyFunSuite with BeforeAndAfter {
 
-  private var space: StubSearchSpace = _
+  private var space: StubSearchSpace = uninitialized
 
   before {
     space = new StubSearchSpace

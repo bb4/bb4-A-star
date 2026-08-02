@@ -3,10 +3,11 @@ package com.barrybecker4.search.queue
 import com.barrybecker4.search.Node
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
+import scala.compiletime.uninitialized
 
 class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
 
-  var q: HeapPriorityQueue[String, Int] = _
+  var q: HeapPriorityQueue[String, Int] = uninitialized
 
   before {
     q = new HeapPriorityQueue[String, Int]()

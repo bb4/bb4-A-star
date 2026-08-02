@@ -35,7 +35,7 @@ class Node[S, T](val state: S, val transition: Option[T] = None,
 
   override def equals(other: Any): Boolean = {
     other match {
-      case other: Node[S, T] => state == other.state
+      case other: Node[?, ?] => state == other.state
       case _ => false
     }
   }
