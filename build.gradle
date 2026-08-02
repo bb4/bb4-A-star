@@ -6,7 +6,7 @@ plugins {
 
 description = 'A-star search algorithm'
 group = 'com.barrybecker4'
-version = '2.0-SNAPSHOT'
+version = '2.0.0'
 
 bb4 {
     archivesBaseName.set('bb4-A-star')
