@@ -18,7 +18,7 @@ import scala.annotation.tailrec
   * @author Barry Becker
   */
 class Node[S, T](val state: S, val transition: Option[T] = None,
-                 var previous: Option[Node[S, T]] = None,
+                 val previous: Option[Node[S, T]] = None,
                  val pathCost: Int = 0, val estimatedTotalCost: Int = 1)
   extends Comparable[Node[S, T]] {
 
