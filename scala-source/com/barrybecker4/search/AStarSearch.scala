@@ -38,21 +38,13 @@ object AStarSearch {
   */
 class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
                         val openQueue: UpdatablePriorityQueue[S, T] = new HeapPriorityQueue[S, T])
-  extends ISearcher[S, T] {
+  extends AbstractSearcher[S, T] {
 
   /** Provides the cost for the lowest cost path from the specified start state to some specified state (g score) */
   private val pathCost: mutable.Map[S, Int] = new mutable.HashMap[S, Int]
 
-  private var solution: Option[Node[S, T]] = None
-
-  /** Number of steps that it took to find solution */
-  private var numTries: Long = 0L
-
   /** States that have been visited, but they may be replaced if we can reach them by a better path */
   private[search] var visited: Map[S, Node[S, T]] = HashMap.empty
-
-  /** Enables stopping the search via method call */
-  private var stopped: Boolean = false
 
   /**
     * @return a sequence of transitions leading from the initial state to the goal state. None if no path found.
@@ -71,10 +63,8 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
   }
 
   /** Clears frontier and bookkeeping so [[solve]] can be called again on the same instance. */
-  private def resetSearchState(): Unit = {
-    stopped = false
-    solution = None
-    numTries = 0L
+  override protected def resetSearchState(): Unit = {
+    super.resetSearchState()
     pathCost.clear()
     visited = HashMap.empty
     openQueue.clear()
@@ -87,19 +77,13 @@ class AStarSearch[S, T](val searchSpace: SearchSpace[S, T],
     pathCost.put(startingState, 0)
   }
 
-  def getPathToSolution: Option[Seq[T]] = solution.map(_.asTransitionList)
-
-  /** Tell the search to stop */
-  def stop(): Unit =
-    stopped = true
-
   /**
     * Best first search for a solution.
     * @return the solution state node, if found, which has the path leading to a solution. None if no solution.
     */
   protected def search(): Option[Node[S, T]] = {
     var found: Option[Node[S, T]] = None
-    while (found.isEmpty && !openQueue.isEmpty && !stopped) {
+    while (found.isEmpty && !openQueue.isEmpty && !isStopped) {
       processNext(openQueue.pop).foreach { sol => found = Some(sol) }
     }
     found

@@ -26,15 +26,7 @@ import scala.util.boundary.break
  * @author Barry Becker
  */
 class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterations: Int = 1_000_000)
-    extends ISearcher[S, T] {
-
-  /** Number of steps that it took to find solution */
-  private var numTries: Long = 0L
-
-  /** Enables stopping the search via method call */
-  private var stopped: Boolean = false
-
-  private var solution: Option[Node[S, T]] = None
+    extends AbstractSearcher[S, T] {
 
   /**
     * @return a sequence of transitions leading from the initial state to the goal state. None if no path found.
@@ -57,18 +49,6 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
     pathToSolution
   }
 
-  private def resetSearchState(): Unit = {
-    stopped = false
-    solution = None
-    numTries = 0L
-  }
-
-  def getPathToSolution: Option[Seq[T]] = solution.map(_.asTransitionList)
-
-  /** Tell the search to stop */
-  def stop(): Unit =
-    stopped = true
-
   /**
     * Depth first search for a solution using iterative deepening. Explore the most promising nodes first.
     * Continue to expand an optimal patch from the startNode using iterative deepening of the search in the tree.
@@ -83,7 +63,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
     var done = false
     var result: Option[Node[S, T]] = None
 
-    while !done && !stopped && result.isEmpty do
+    while !done && !isStopped && result.isEmpty do
       val (newBound, newNode) = expandSearch(currentNode, bound)
       currentNode = newNode
       if newBound == 0 then
@@ -106,7 +86,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
     */
   private def expandSearch(node: Node[S, T], bound: Int): (Int, Node[S, T]) =
     boundary[(Int, Node[S, T])]:
-      if stopped then break((Int.MaxValue, node))
+      if isStopped then break((Int.MaxValue, node))
 
       val estTotalCost = node.estimatedTotalCost
       if estTotalCost > bound then break((estTotalCost, node))
@@ -121,7 +101,7 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
       var min = Int.MaxValue
       var currentNode = node
       for nbrNode <- nbrNodes do
-        if stopped then break((Int.MaxValue, currentNode))
+        if isStopped then break((Int.MaxValue, currentNode))
         numTries += 1
         val (newBound, newNode) = expandSearch(nbrNode, bound)
         currentNode = newNode
