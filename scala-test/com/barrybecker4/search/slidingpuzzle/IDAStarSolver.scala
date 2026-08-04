@@ -21,12 +21,12 @@ object IDAStarSolver {
     if (!solver.isSolvable) System.out.println("No solutionTransitions possible")
     else {
       System.out.println("Minimum number of moves = " + solver.moves)
-      for (board <- solver.getSolution(initial)) println(board)
+      solver.getSolution(initial).foreach(_.foreach(println))
     }
   }
 }
 
-class IDAStarSolver(var startState: Board) extends Solver {
+class IDAStarSolver(val startState: Board) extends Solver {
 
   // find a solution to the initial board (using the A* algorithm)
   solveAssumingSolvable(startState)

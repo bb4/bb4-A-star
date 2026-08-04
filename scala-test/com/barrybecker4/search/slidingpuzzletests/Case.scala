@@ -4,5 +4,4 @@ package com.barrybecker4.search.slidingpuzzletests
 /**
   * @author Barry Becker
   */
-class Case(var filename: String, var expNumMoves: Int, var expIsSolvable: Boolean) {
-}
+case class Case(filename: String, expNumMoves: Int, expIsSolvable: Boolean)

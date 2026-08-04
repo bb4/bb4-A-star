@@ -24,12 +24,12 @@ object AStarSolver {
     if (!solver.isSolvable) System.out.println("No solutionTransitions possible")
     else {
       System.out.println("Minimum number of moves = " + solver.moves)
-      for (board <- solver.getSolution(initial)) println(board)
+      solver.getSolution(initial).foreach(_.foreach(println))
     }
   }
 }
 
-class AStarSolver(var startState: Board, val queue: UpdatablePriorityQueue[Board, Transition]) extends Solver {
+class AStarSolver(val startState: Board, val queue: UpdatablePriorityQueue[Board, Transition]) extends Solver {
 
   // find a solution to the initial board (using the A* algorithm)
   solveAssumingSolvable(startState, queue)
