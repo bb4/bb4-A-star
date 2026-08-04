@@ -2,21 +2,14 @@
 package com.barrybecker4.search
 
 import com.barrybecker4.search.space.StubSearchSpace
-import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
-import scala.compiletime.uninitialized
 
 /**
   * @author Barry Becker
   */
+class AStarSearchSuite extends AnyFunSuite {
 
-class AStarSearchSuite extends AnyFunSuite with BeforeAndAfter {
-
-  private var space: StubSearchSpace = uninitialized
-
-  before {
-    space = new StubSearchSpace
-  }
+  private val space = new StubSearchSpace
 
   test("StubSearchSpace distance from goal") {
     assertResult(9) { space.distanceFromGoal(space.initialState) }

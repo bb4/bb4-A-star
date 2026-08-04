@@ -1,19 +1,14 @@
 package com.barrybecker4.search.queue
 
 import com.barrybecker4.search.Node
-import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
-import scala.compiletime.uninitialized
 
-class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
+class HeapPriorityQueueSuite extends AnyFunSuite {
 
-  var q: HeapPriorityQueue[String, Int] = uninitialized
-
-  before {
-    q = new HeapPriorityQueue[String, Int]()
-  }
+  private def emptyQueue = new HeapPriorityQueue[String, Int]()
 
   test("Add to queue") {
+    val q = emptyQueue
     val node1 = new Node[String, Int]("foo", 42)
     val node2 = new Node[String, Int]("bar", 12)
 
@@ -29,6 +24,7 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
   }
 
   test("pop from queue") {
+    val q = emptyQueue
     val node1 = new Node[String, Int]("foo", 42)
     val node2 = new Node[String, Int]("bar", 12)
 
@@ -44,11 +40,12 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
 
   test("peek on empty queue throws") {
     assertThrows[NoSuchElementException] {
-      q.peek
+      emptyQueue.peek
     }
   }
 
   test("Error if try to pop from empty queue") {
+    val q = emptyQueue
     val node1 = new Node[String, Int]("foo", 42)
     q.add(node1)
     q.pop
@@ -59,7 +56,7 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
   }
 
   test("Update in queue") {
-    val q = new HeapPriorityQueue[String, Int]()
+    val q = emptyQueue
 
     val prevNode1 = new Node[String, Int]("prev", 42)
     val node1 = new Node[String, Int]("foo", Some(3), Some(prevNode1), 20, 12)
@@ -81,6 +78,7 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
   }
 
   test("clear empties the queue") {
+    val q = emptyQueue
     q.add(new Node[String, Int]("a", 5))
     q.add(new Node[String, Int]("b", 3))
     q.clear()
