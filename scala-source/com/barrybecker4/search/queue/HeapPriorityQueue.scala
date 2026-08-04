@@ -56,6 +56,11 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
   /** The number of elements in the priority queue. */
   private var _size: Int = 0
 
+  /** Comparison used by sift operations: natural ordering when comparator is null. */
+  private val isLess: (Node[S, T], Node[S, T]) => Boolean =
+    if (comparator != null) (a, b) => comparator.compare(a, b) < 0
+    else (a, b) => a.compareTo(b) < 0
+
   /** Increases the capacity of the array.
     * @param minCapacity the desired minimum capacity
     */
@@ -147,25 +152,16 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     * promoting x up the tree until it is greater than or equal to
     * its parent, or is the root.
     *
-    * To simplify and speed up coercions and comparisons, the
-    * Comparable and Comparator versions are separated into different
-    * methods that are otherwise identical. (Similarly for siftDown.)
-    *
     * @param k the position to fill
     * @param x the item to insert
     */
-  private def siftUp(k: Int, x: Node[S, T]): Unit =  {
-    if (comparator != null) siftUpUsingComparator(k, x)
-    else siftUpComparable(k, x)
-  }
-
-  private def siftUpComparable(index: Int, key: Node[S, T]): Unit =  {
+  private def siftUp(index: Int, key: Node[S, T]): Unit = {
     var k = index
     var done = false
     while (k > 0 && !done) {
       val parent: Int = (k - 1) >>> 1
       val element: Node[S, T] = queue(parent)
-      if (key.compareTo(element) < 0)  {
+      if (isLess(key, element)) {
         queue(k) = element
         indexMap.put(element, k)
         k = parent
@@ -175,22 +171,6 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     indexMap.put(key, k)
   }
 
-  private def siftUpUsingComparator(index: Int, x: Node[S, T]): Unit =  {
-    var k = index
-    var done = false
-    while (k > 0 && !done) {
-      val parent: Int = (k - 1) >>> 1
-      val e: Node[S, T] = queue(parent)
-      if (comparator.compare(x, e) < 0) {
-        queue(k) = e
-        indexMap.put(e, k)
-        k = parent
-      } else done = true
-    }
-    queue(k) = x
-    indexMap.put(x, k)
-  }
-
   /** Inserts item x at position k, maintaining heap invariant by
     * demoting x down the tree repeatedly until it is less than or
     * equal to its children or is a leaf.
@@ -198,12 +178,7 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     * @param k the position to fill
     * @param x the item to insert
     */
-  private def siftDown(k: Int, x: Node[S, T]): Unit =  {
-    if (comparator != null) siftDownUsingComparator(k, x)
-    else siftDownComparable(k, x)
-  }
-
-  private def siftDownComparable(index: Int, key: Node[S, T]): Unit =  {
+  private def siftDown(index: Int, key: Node[S, T]): Unit = {
     var k = index
     var done = false
     val half: Int = _size >>> 1 // loop while a non-leaf
@@ -211,10 +186,11 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
       var child: Int = (k << 1) + 1 // assume left child is least
       var c: Node[S, T] = queue(child)
       val right: Int = child + 1
-      if (right < _size && c.compareTo(queue(right)) > 0)
+      if (right < _size && isLess(queue(right), c)) {
         child = right
         c = queue(child)
-      if (key.compareTo(c) > 0) {
+      }
+      if (isLess(c, key)) {
         queue(k) = c
         indexMap.put(c, k)
         k = child
@@ -222,26 +198,5 @@ class HeapPriorityQueue[S, T](val initialCapacity: Int = HeapPriorityQueue.DEFAU
     }
     queue(k) = key
     indexMap.put(key, k)
-  }
-
-  private def siftDownUsingComparator(index: Int, x: Node[S, T]): Unit =  {
-    var k = index
-    var done = false
-    val half: Int = _size >>> 1
-    while (k < half && !done) {
-      var child: Int = (k << 1) + 1
-      var c: Node[S, T] = queue(child)
-      val right: Int = child + 1
-      if (right < _size && comparator.compare(c, queue(right)) > 0)
-        child = right
-        c = queue(child)
-      if (comparator.compare(x, c) > 0) {
-        queue(k) = c
-        indexMap.put(c, k)
-        k = child
-      } else done = true
-    }
-    queue(k) = x
-    indexMap.put(x, k)
   }
 }

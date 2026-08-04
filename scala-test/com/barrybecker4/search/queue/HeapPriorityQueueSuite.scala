@@ -79,4 +79,25 @@ class HeapPriorityQueueSuite extends AnyFunSuite with BeforeAndAfter {
     // Note that "bar' got moved in front of "foo" because it has smaller estFutureCost.
     assertResult("[blah, pathCost=0 totalCost=7]") { q.peek.toString }
   }
+
+  test("clear empties the queue") {
+    q.add(new Node[String, Int]("a", 5))
+    q.add(new Node[String, Int]("b", 3))
+    q.clear()
+    assertResult(0) { q.size }
+    assert(q.isEmpty)
+  }
+
+  test("custom comparator reverses natural cost order") {
+    val reverseCost =
+      new java.util.Comparator[Node[String, Int]] {
+        override def compare(a: Node[String, Int], b: Node[String, Int]): Int =
+          Integer.compare(b.estimatedTotalCost, a.estimatedTotalCost)
+      }
+    val rq = new HeapPriorityQueue[String, Int](16, reverseCost)
+    rq.add(new Node[String, Int]("low", 3))
+    rq.add(new Node[String, Int]("high", 30))
+    assertResult("high") { rq.pop.state }
+    assertResult("low") { rq.pop.state }
+  }
 }
