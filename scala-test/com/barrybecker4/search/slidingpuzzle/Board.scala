@@ -51,9 +51,9 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
 
   private val blocks: Array[Byte] = theBlocks
   private val side: Byte = Math.sqrt(blocks.length).toByte
-  private var hammingDistance: Byte = -1
-  var manhattanDistance: Int = if (manhattanDist == -1) calculateManhattan else manhattanDist
-  private var hash: Int = -1
+  private lazy val hammingDistance: Byte = calculateHamming
+  val manhattanDistance: Int = if (manhattanDist == -1) calculateManhattan else manhattanDist
+  private lazy val hash: Int = util.Arrays.hashCode(blocks)
 
   /**
     * Construct a board from an N-by-N array of blocks
@@ -67,10 +67,7 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
   def dimension: Int = side
 
   /** @return number of blocks out of place */
-  def hamming: Int = {
-    if (hammingDistance < 0) hammingDistance = calculateHamming
-    hammingDistance
-  }
+  def hamming: Int = hammingDistance
 
   private def calculateHamming: Byte = {
     var expected: Byte = 0
@@ -112,10 +109,7 @@ class Board(theBlocks: Array[Byte], manhattanDist: Int = -1) {
     }
   }
 
-  override def hashCode: Int = {
-    if (hash < 0) hash = util.Arrays.hashCode(blocks)
-    hash
-  }
+  override def hashCode: Int = hash
 
   /** @return true if this board the goal board */
   def isGoal: Boolean = hamming == 0
