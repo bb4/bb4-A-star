@@ -1,6 +1,6 @@
 # A-star and IDA-star
 
-📊 [Build status for all bb4 projects](https://github.com/bb4)
+📊 [Build status for all bb4 projects](https://github.com/bb4/.github)
 
 Scala implementation of generic [A-Star](https://en.wikipedia.org/wiki/A*_search_algorithm) [IDA-star](https://en.wikipedia.org/wiki/Iterative_deepening_A*) search algorithms 
 
