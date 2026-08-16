@@ -1,4 +1,7 @@
 # A-star and IDA-star
+
+📊 [Build status for all bb4 projects](https://github.com/bb4)
+
 Scala implementation of generic [A-Star](https://en.wikipedia.org/wiki/A*_search_algorithm) [IDA-star](https://en.wikipedia.org/wiki/Iterative_deepening_A*) search algorithms 
 
 A-Star search uses a mutable heap priority queue. It is a fast search, but can be very space intensive if the search space is large.
