@@ -29,14 +29,25 @@ trait SearchSpace[S, T] extends Refreshable[S, T] {
   /** @return the state (immutable) that you get after applying the specified transition. */
   def transition(state: S, transition: T): S
 
-  /** Optional helper for algorithms that track a mutable seen-set (not used by [[com.barrybecker4.search.AStarSearch]]
-    * or [[com.barrybecker4.search.IDAStarSearch]] in this library). Default: [[AbstractSearchSpace#alreadySeen]].
+  /** Optional helper for algorithms that track a mutable seen-set.
+    * [[com.barrybecker4.search.AStarSearch]] does not use this.
+    * [[com.barrybecker4.search.IDAStarSearch]] uses it only when
+    * [[com.barrybecker4.search.IDAStarSearchConfig.useIterationTransposition]] is true
+    * (one seen-set per IDA* bound iteration; memory tradeoff for pruning).
+    * Default: [[AbstractSearchSpace#alreadySeen]].
     *
     * @param state to check
     * @param seen  mutable set of seen states
     * @return true if the specified state was already seen (possibly taking into account symmetries).
     */
   def alreadySeen(state: S, seen: mutable.Set[S]): Boolean
+
+  /**
+    * Optional cheap unsolvability signal. When true, [[com.barrybecker4.search.IDAStarSearch]] skips search and
+    * returns `None` immediately (still calling [[finalRefresh]]). Default: false — override only when the space
+    * can prove unsolvability without a full search (e.g. sliding-puzzle parity).
+    */
+  def isKnownUnsolvable: Boolean = false
 
   /** @return estimate of the cost to reach the goal from the specified state. */
   def distanceFromGoal(state: S): Int

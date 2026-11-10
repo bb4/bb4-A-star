@@ -18,6 +18,8 @@ abstract class AbstractSearchSpace[S, T](val initialState: S) extends SearchSpac
     } else true
   }
 
+  override def isKnownUnsolvable: Boolean = false
+
   def getCost(transition: T): Int = 1
 
   def refresh(state: S, numTries: Long): Unit = {}

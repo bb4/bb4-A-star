@@ -1,10 +1,20 @@
-// Copyright by Barry G. Becker, 2021. Licensed under MIT License: http://www.opensource.org/licenses/MIT
+// Copyright by Barry G. Becker, 2021-2026. Licensed under MIT License: http://www.opensource.org/licenses/MIT
 package com.barrybecker4.search
 
-import com.barrybecker4.search.space.SearchSpace
+import com.barrybecker4.search.space.{SearchSpace, TrivialSearchSpace}
 
+import scala.collection.mutable
 import scala.util.boundary
 import scala.util.boundary.break
+
+object IDAStarSearch {
+  /** Small demo of IDA* on [[com.barrybecker4.search.space.TrivialSearchSpace]] */
+  def main(args: Array[String]): Unit = {
+    val search = new IDAStarSearch[String, (String, String)](new TrivialSearchSpace())
+    val path = search.solve.get
+    println("path = " + path.mkString(", "))
+  }
+}
 
 /**
   * Sequential search strategy that uses the IDA* search algorithm.
@@ -20,13 +30,28 @@ import scala.util.boundary.break
   * and do not recompute it from scratch. Hint: use a private constructor, that takes the distance as a param.
   * - Sort the neighbors so that the most promising is delivered first.
   *
- * @param searchSpace          the global search space containing initial and goal states.
- * @param maxBoundIterations   max number of times the cost bound is raised before giving up;
- *                             default is large enough for typical puzzles (the previous fixed cap of 42 was too low).
- * @author Barry Becker
- */
-class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterations: Int = 1_000_000)
+  * Caps (`maxNodeExpansions`, `maxBoundIterations`, [[stop]]) cause [[solve]] to return `None`. That does not
+  * distinguish unsolvable from exhausted/stopped; callers can use
+  * [[com.barrybecker4.search.space.SearchSpace.isKnownUnsolvable]], external
+  * parity checks, or inspect [[nodeExpansions]].
+  *
+  * @param searchSpace the global search space containing initial and goal states.
+  * @param config      limits, weighting, and optional pruning; see [[IDAStarSearchConfig]]
+  * @author Barry Becker
+  */
+class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T],
+                          val config: IDAStarSearchConfig = IDAStarSearchConfig())
     extends AbstractSearcher[S, T] {
+
+  /** Preserves `new IDAStarSearch(space, maxBoundIterations)` call sites. */
+  def this(searchSpace: SearchSpace[S, T], maxBoundIterations: Int) =
+    this(searchSpace, IDAStarSearchConfig(maxBoundIterations = maxBoundIterations))
+
+  /** Neighbor expansions counted during the last [[solve]] (`numTries`). */
+  def nodeExpansions: Long = numTries
+
+  private def limitReached: Boolean =
+    isStopped || config.maxNodeExpansions.exists(_ <= numTries)
 
   /**
     * @return a sequence of transitions leading from the initial state to the goal state. None if no path found.
@@ -36,8 +61,14 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
 
     resetSearchState()
 
+    if searchSpace.isKnownUnsolvable then
+      val elapsed: Long = System.currentTimeMillis - startTime
+      searchSpace.finalRefresh(None, None, numTries, elapsed)
+      return None
+
     val startingState: S = searchSpace.initialState
-    val startNode: Node[S, T] = new Node[S, T](startingState, searchSpace.distanceFromGoal(startingState))
+    val h0 = searchSpace.distanceFromGoal(startingState)
+    val startNode: Node[S, T] = new Node[S, T](startingState, weightedTotalCost(0, h0))
 
     solution = search(startNode)
     val pathToSolution: Option[Seq[T]] = getPathToSolution
@@ -63,12 +94,16 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
     var done = false
     var result: Option[Node[S, T]] = None
 
-    while !done && !isStopped && result.isEmpty do
-      val (newBound, newNode) = expandSearch(currentNode, bound)
+    while !done && !limitReached && result.isEmpty do
+      val seen: Option[mutable.Set[S]] =
+        if config.useIterationTransposition then Some(mutable.Set.empty[S]) else None
+      val (newBound, newNode) = expandSearch(currentNode, bound, seen)
       currentNode = newNode
       if newBound == 0 then
         result = Some(currentNode)
-      else if newBound == Int.MaxValue || iteration > maxBoundIterations then
+      else if newBound == Int.MaxValue || iteration > config.maxBoundIterations then
+        done = true
+      else if config.terminateWhenBoundUnchanged && newBound == bound then
         done = true
       else
         iteration += 1
@@ -84,15 +119,20 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
     * @return (min, currentNode) where min is the new minimum bound,
     *         and currentNode is the new node on the path from the startNode.
     */
-  private def expandSearch(node: Node[S, T], bound: Int): (Int, Node[S, T]) =
+  private def expandSearch(node: Node[S, T], bound: Int,
+                           seen: Option[mutable.Set[S]]): (Int, Node[S, T]) =
     boundary[(Int, Node[S, T])]:
-      if isStopped then break((Int.MaxValue, node))
+      if limitReached then break((Int.MaxValue, node))
 
       val estTotalCost = node.estimatedTotalCost
       if estTotalCost > bound then break((estTotalCost, node))
 
       val currentState: S = node.state
       if searchSpace.isGoal(currentState) then break((0, node))
+
+      seen.foreach { s =>
+        if searchSpace.alreadySeen(currentState, s) then break((Int.MaxValue, node))
+      }
 
       val transitions: Seq[T] = searchSpace.legalTransitions(currentState)
       searchSpace.refresh(currentState, numTries)
@@ -101,9 +141,9 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
       var min = Int.MaxValue
       var currentNode = node
       for nbrNode <- nbrNodes do
-        if isStopped then break((Int.MaxValue, currentNode))
+        if limitReached then break((Int.MaxValue, currentNode))
         numTries += 1
-        val (newBound, newNode) = expandSearch(nbrNode, bound)
+        val (newBound, newNode) = expandSearch(nbrNode, bound, seen)
         currentNode = newNode
         if newBound == 0 then break((0, currentNode))
         if newBound < min then min = newBound
@@ -113,16 +153,26 @@ class IDAStarSearch[S, T](val searchSpace: SearchSpace[S, T], val maxBoundIterat
       assert(currentNode == node)
       (min, node)
 
-  private def buildSortedNeighborNodes(currentState: S, currentNode: Node[S, T], transitions: Seq[T]): Seq[Node[S, T]] = {
+  private def buildSortedNeighborNodes(currentState: S, currentNode: Node[S, T],
+                                       transitions: Seq[T]): Seq[Node[S, T]] = {
     val builders = transitions.flatMap { trans =>
       val nbr: S = searchSpace.transition(currentState, trans)
       Option.when(!currentNode.containsStateInPath(nbr)) {
         val transitionCost = searchSpace.getCost(trans)
         val pathCost = currentNode.pathCost + transitionCost
         val estRemainingCost: Int = searchSpace.distanceFromGoal(nbr)
-        new Node[S, T](nbr, Some(trans), Some(currentNode), pathCost, pathCost + estRemainingCost)
+        new Node[S, T](nbr, Some(trans), Some(currentNode), pathCost,
+          weightedTotalCost(pathCost, estRemainingCost))
       }
     }
     builders.sorted
   }
+
+  /**
+    * Weighted f-cost. At `weightPercent == 100` this is `pathCost + h` (unchanged from classic IDA*).
+    * Otherwise uses `pathCost * 100 + h * weightPercent` (bb4-puzzles slider semantics).
+    */
+  private def weightedTotalCost(pathCost: Int, h: Int): Int =
+    if config.weightPercent == 100 then pathCost + h
+    else pathCost * 100 + h * config.weightPercent
 }
