@@ -203,7 +203,7 @@ class IDAStarSearchSuite extends AnyFunSuite {
 
   test("IDA* weight 100 finds optimal; higher weight finds a path of cost >= optimal") {
     val space = new TwoPathSpace
-    val optimal = new IDAStarSearch[String, String](space, IDAStarSearchConfig(weightPercent = 100))
+    val optimal = new IDAStarSearch[String, String](space, IDAStarSearchConfig())
     val greedy = new IDAStarSearch[String, String](space, IDAStarSearchConfig(weightPercent = 300))
     val optPath = optimal.solve.get
     val greedyPath = greedy.solve.get

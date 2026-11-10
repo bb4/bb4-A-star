@@ -16,7 +16,7 @@ class IDAStarAStarParitySuite extends AnyFunSuite {
 
   private def assertSameCost[S, T](space: com.barrybecker4.search.space.SearchSpace[S, T]): Unit = {
     val aStar = new AStarSearch[S, T](space)
-    val ida = new IDAStarSearch[S, T](space, IDAStarSearchConfig(weightPercent = 100))
+    val ida = new IDAStarSearch[S, T](space, IDAStarSearchConfig())
     val aPath = aStar.solve.get
     val iPath = ida.solve.get
     assert(pathCost(space, aPath) == pathCost(space, iPath),
